@@ -53,6 +53,8 @@ def initialize_app():
     dates = conn.execute("SELECT * FROM dates").fetchall()
     conn.close()
 
+    print("test")
+
 
     #sort wo information
 
