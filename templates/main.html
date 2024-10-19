@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <link rel="stylesheet" type="text/css" href="../static/css/base.css" />
+
+    <div class="content">
+        <h1 class="header">{% block title %} Welcome to Sienna's Life {% endblock %}</h1>
+    
+        <!-- inherited to do content-->
+        {% block todo %} {% endblock %}
+    
+        {% include 'todo.html' %}
+    </div>
+    <!--
+    {% for post in posts %}
+        <a href="{{ url_for('post', post_id=post['id']) }}">
+            <h2 class = "mint">{{ post['title'] }}</h2>
+        </a>
+        <span class="badge badge-primary">{{ post['created'] }}</span>
+        <a href="{{ url_for('edit', id=post['id']) }}">
+            <span class="badge badge-warning">Edit</span>
+        </a>
+        <hr>
+    {% endfor %}
+    -->
+{% endblock %}

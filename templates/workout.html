@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% block css %} <link rel="stylesheet" type="text/css" href="../static/css/workout.css" /> {% endblock %}
+    
+
+    <div class="content">
+        <h1 class="header">{% block title %} Workout Home Page {% endblock %}</h1>
+
+        <!-- Adding a new exercise -->
+        <div class = "add-section">
+            <form class = "form-box" name="new-exercise-form" method="post">
+                <input type="hidden" name="form_id" value="form-add"> </input>
+                <label class = "form form-label" for="new-exercise-input">Add New Exercise:</label>
+                <input class="form form-input" id="new-exercise-input" type="text" name="new-exercise"
+                        placeholder="Exercise Name"
+                        value="{{ request.form['title'] }}">
+                </input>
+                <button class = "form form-btn" type="submit" id="new-exercise-btn">Add</button>
+
+            </form>
+        </div>
+
+        <!-- Displaying the exercises -->
+        <div class="workout-display-scroll">
+            <div class="workout-display">
+
+                <form class="ex-form" name="exercise-content-form" method="post">
+                    <input type="hidden" name="form_id" value="form-content"> </input>
+
+                    <!-- Displaying the date header -->
+                    <div class="workout-display-dates">
+
+                        <div class="workout-submit-btn-container">
+                            <button class = "workout-submit-btn" type="submit" id="workout-save-btn"> <h2 class="workout-submit-text"> Save </h2> </button>
+                        </div>
+
+                        <div class="workout-display-dates-content">
+                            {% for date in dates %}
+                                <div class="date">
+                                    <h2 class="date-str"> {{ date['str_dat'] }}</h2>
+                                </div>
+                            {% endfor %}
+                        </div>                    
+                    
+
+                    </div>
+
+                    <!-- Displaying the exercises and the reps -->
+                    <div class="exercises-container">
+                        <div class="exercises">
+                            {% for ex in exs %}
+                                <div class = "exercise-log">
+
+                                    <div class = "exercise-name"> <h2> {{ ex['title'] }} </h2> </div>
+
+                                    <div class="exercise-name-content">
+                                        {% for date in dates %}
+                                            <div class="exercise-date">
+                                                <input class="exercise-date-in" 
+                                                id="{{ ex['title'] }}-on-{{ date['str_dat'] }}" name="{{ ex['title'] }}-on-{{ date['str_dat'] }}"
+                                                placeholder="{{ wos[ex['title']][date['str_dat']] }}"> </input> 
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    
+
+{% endblock %}
+
+{% block js_end %} <script type="text/javascript" src="../static/js/workout.js"> </script> {% endblock %}

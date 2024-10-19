@@ -1,0 +1,178 @@
+input {
+    all: unset;
+}
+
+button {
+    all: unset;
+}
+
+
+
+
+/* ADD SECTION */
+
+.add-section {
+    height: 10%;
+    width: 100%;
+    background-color: rgb(9, 99, 99);
+}
+
+.form-box {
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+
+}
+
+.form {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    height: 80%;
+
+}
+
+.form-label {
+    width: 20%;
+}
+
+.form-input {
+    width: 40%;
+    background-color:rgb(84, 184, 154);
+    border-radius: 5px;
+    margin-right: 5%;
+}
+
+.form-btn {
+    width: 10%;
+    background-color:rgb(84, 184, 154);
+    border-radius: 5%;
+}
+
+.form-btn:hover {
+    background-color: rgb(64, 164, 134);
+}
+
+/* CONTENT SECTION */
+
+.workout-display-scroll {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    transform: rotateX(180deg);
+
+    border: 10px solid rgb(18, 90, 72);
+
+}
+
+.workout-display-scroll::-webkit-scrollbar {
+    width: 15%;
+}
+
+.workout-display-scroll::-webkit-scrollbar-track {
+    background: rgb(84, 184, 154);
+}
+
+.workout-display-scroll::-webkit-scrollbar-thumb {
+    background: rgb(38, 156, 127);
+    border-radius: 10px;
+}
+
+
+.workout-display {
+    display: flex;
+    flex-direction: column;
+    transform: rotateX(180deg);
+}
+
+/* DATE SECTION */
+
+.workout-display-dates {
+    display: flex;
+    height: 10%;
+}
+
+.workout-submit-btn-container {
+    width: 20%;
+    height: 100%;
+    display: flex;
+    padding: .5%;
+    padding-left: 1%;
+    padding-right: 1%;
+}
+
+.workout-submit-btn {
+    width: 100%;
+    text-align: center;
+    background-color:rgb(34, 142, 150);
+
+    border: midnightblue solid 5px;
+    border-radius: 5px;
+}
+
+.workout-submit-btn:hover{
+    background-color: rgb(14, 122, 130);
+}
+
+.workout-submit-text {
+   text-align: center; 
+}
+
+.workout-display-dates-content {
+    display: flex;
+    flex-shrink: 0;
+    flex-grow: 0;
+    width: 80%;
+}
+
+.date {
+    width: 15%;
+    border: 5px black solid;
+    border-radius: 2px;
+    display: flex;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+/* EXERCISE SECTION */
+
+.exercises-container {
+    padding-top: 1%;
+    height: 90%;
+}
+
+.exercises {
+    display: flex;
+    flex-direction: column;
+}
+
+.exercise-log {
+    display: flex;
+    height: 12%;
+}
+
+.exercise-name {
+    background-color: rgb(30, 144, 144);
+    border: 5px solid black;
+    border-radius: 2px;
+
+    width: 20%;
+}
+
+.exercise-name-content {
+    width: 80%;
+    display: flex;
+}
+
+.exercise-date {
+
+    width: 15%;
+    border: 5px teal solid;
+    border-radius: 4px;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+}
+
+.exercise-date-in {
+    text-align: center;
+}

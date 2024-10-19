@@ -1,0 +1,158 @@
+/* general */
+
+* {
+    font-family: papyrus;
+
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+
+    box-sizing: border-box;
+
+}
+
+a {
+    text-decoration: none;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+a:visited { text-decoration: none; }
+a:hover { text-decoration: none; }
+a:focus { text-decoration: none; }
+a:hover, a:active { text-decoration: none; }
+
+/* base */
+
+.bg-light {
+    background-color: rgb(164, 245, 207);
+}
+
+.navbar {
+    display: inline-block;
+    height: 15%;
+}
+
+.navbar-brand {
+    text-align: center;
+    text-decoration: none;
+    color: teal;
+    font-size: 25px;
+    width: 100%;
+    height: 50%;
+
+}
+
+.navbar-bar {
+    height: 50%;
+}
+
+.navbar-nav {
+    list-style-type: none;
+    background-color: rgb(58, 234, 152);
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.nav-item {
+    box-sizing: border-box;
+    width: 12%;
+    height: 80%;
+
+    border-radius: 10px;
+    margin: 10px;
+
+    float: left;
+
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    vertical-align: center;
+}
+
+.nav-item.float-right {
+    float:right;
+}
+
+.nav-item.active {
+    background-color: rgb(49, 175, 133);
+}
+
+.nav-item:not(.active) {
+    background-color: rgb(49, 175, 175);
+
+}
+
+.nav-link {
+    display: block;
+    color: teal;
+    background-color: rgb(141, 245, 245);
+    text-decoration: none;
+
+    padding: 5px;
+    border-radius: 5px;
+    text-align: center;
+    white-space:normal;
+    overflow:hidden;
+
+    width: 80%;
+    height: 60%;
+
+    transition: all .5s ease;
+
+}
+
+.nav-link:hover {
+    background-color: rgb(101, 233, 233);
+}
+
+/* main */
+.content {
+    display: flex;
+    flex-direction: column;
+
+    background-color: rgb(48, 246, 226);
+}
+
+.header {
+    display: block;
+    height: 10%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* todo */
+
+.todo-block {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    border: 30px teal;
+    background-color: rgb(8, 79, 110);
+    
+}
+
+.todo-title {
+    text-align: center;
+    color: teal;
+    display: block;
+    height: 10%;
+
+}
+
+.todo-add-btn {
+    color: teal;
+    height: 5%;
+}
+
+.todo {
+    margin: 10px;
+    padding: 10px;
+    height: 10%;
+}
+
+/* add to-do */
+
+
