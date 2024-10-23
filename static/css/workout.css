@@ -74,7 +74,7 @@ button {
 
 .workout-display-scroll::-webkit-scrollbar-thumb {
     background: rgb(38, 156, 127);
-    border-radius: 10px;
+    border-radius: 15px;
 }
 
 
@@ -83,6 +83,35 @@ button {
     flex-direction: column;
     transform: rotateX(180deg);
 }
+
+/* MENU SECTION */
+.menu-container {
+    display: flex;
+    padding: 0.1%;
+    height: 10%;
+}
+
+.menu {
+    display: flex;
+    justify-content: center;
+}
+
+.menu-btn {
+    width: 10%;
+
+    background-color:rgb(17, 178, 252);
+    border: 5px solid rgb(37, 250, 186);
+    border-radius: 3px;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.menu-btn:hover {
+    background-color: rgb(14, 131, 185);
+    text-align: center;
+}
+
+
 
 /* DATE SECTION */
 
@@ -95,7 +124,7 @@ button {
     width: 20%;
     height: 100%;
     display: flex;
-    padding: .5%;
+    padding: .25%;
     padding-left: 1%;
     padding-right: 1%;
 }
@@ -107,6 +136,8 @@ button {
 
     border: midnightblue solid 5px;
     border-radius: 5px;
+    padding: 0.5%;
+    font-size: .75rem;
 }
 
 .workout-submit-btn:hover{
@@ -125,7 +156,7 @@ button {
 }
 
 .date {
-    width: 15%;
+    width: 12%;
     border: 5px black solid;
     border-radius: 2px;
     display: flex;
@@ -165,7 +196,7 @@ button {
 
 .exercise-date {
 
-    width: 15%;
+    width: 12%;
     border: 5px teal solid;
     border-radius: 4px;
     display: flex;
@@ -175,4 +206,8 @@ button {
 
 .exercise-date-in {
     text-align: center;
+}
+
+.exercise-date-in::placeholder {
+    color: black;
 }
