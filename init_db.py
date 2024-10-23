@@ -6,7 +6,7 @@ connection = sqlite3.connect('database.db')
 with open('schema.sql') as f:
     connection.executescript(f.read())
 
-
+"""
 cur = connection.cursor()
 
 cur.execute("INSERT INTO posts (title, content) VALUES (?, ?)",
@@ -39,10 +39,10 @@ cur.execute("INSERT INTO workouts (ex, reps, dat) VALUES (?, ?, ?)",
 
 cur.execute("INSERT INTO workouts (ex, reps, dat) VALUES (?, ?, ?)",
             ('Pushups', 10, "10/20")
-            )
+            ) """
 
 
 connection.commit()
 connection.close()
 
-prep.main()
+#prep.main()
