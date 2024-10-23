@@ -1,11 +1,15 @@
 import sqlite3
 from flask import Flask, render_template, request, url_for, flash, redirect
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import abort
 import prep as p
 import datetime
 
 #global variables
 wos_by_ex_by_date = {}
+
+
+
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
@@ -46,6 +50,9 @@ app.config['SECRET_KEY'] = '3.1415926535'
 def initialize_app():
     app.before_request_funcs[None].remove(initialize_app)
 
+    #run prep file
+    p.main()
+
     #get information from db
     conn = get_db_connection()
     exs = conn.execute('SELECT * FROM exercises').fetchall()
@@ -53,9 +60,7 @@ def initialize_app():
     dates = conn.execute("SELECT * FROM dates").fetchall()
     conn.close()
 
-
-    #sort wo information
-
+    #make double dictionary
     for ex in exs:
         exs_by_date = {}
         
@@ -65,7 +70,7 @@ def initialize_app():
                 if wo["dat"] == date["str_dat"] and wo["ex"] == ex["title"] and wo["reps"] != "" and wo["reps"] != None:
                     exs_by_date[date["str_dat"]] = wo["reps"]
                     found = True
-            #print("\nhi", date, found)
+
             if found == False:
                 exs_by_date[date["str_dat"]] = 0
 
@@ -98,35 +103,16 @@ def add_todo():
             conn.close()
     return render_template('add_todo.html')
 
-#workout page
-@app.route('/workout', methods=('GET', 'POST'))
-def workout():
+def load_workout(week = 0):
     #get information from db
     conn = get_db_connection()
     exs = conn.execute('SELECT * FROM exercises').fetchall()
     wos = conn.execute("SELECT * FROM workouts").fetchall()
     dates = conn.execute("SELECT * FROM dates").fetchall()
+    weeks = conn.execute("SELECT * FROM weeks").fetchall()
     conn.close()
-
-
-    #sort wo information
-    wos_by_ex_by_date = {}
-    for ex in exs:
-        exs_by_date = {}
-        
-        for date in dates:
-            found = False
-            for wo in wos:
-                if wo["dat"] == date["str_dat"] and wo["ex"] == ex["title"] and wo["reps"] != "" and wo["reps"] != None:
-                    exs_by_date[date["str_dat"]] = wo["reps"]
-                    found = True
-            #print("hi", date, found)
-            if found == False:
-                exs_by_date[date["str_dat"]] = 0
-
-        wos_by_ex_by_date[ex['title']] = exs_by_date
-    
-    print(wos_by_ex_by_date) 
+ 
+    print("second", wos_by_ex_by_date)
 
     if request.method == "POST":
         
@@ -140,6 +126,8 @@ def workout():
                 conn = get_db_connection()
                 conn.execute('INSERT INTO exercises (title) VALUES (?)',
                             (title,))
+                exs_by_date = {}
+                wos_by_ex_by_date[title] = exs_by_date
                 conn.commit()
                 conn.close()
             return redirect(url_for('workout'))
@@ -154,16 +142,27 @@ def workout():
                 for date in dates:
                     num = request.form.get(f'{ex['title']}-on-{date['str_dat']}')
                     
-                    if num != None:
+                    if num != None and num != "":
                         #print("\n\n\n reps", num)
                         conn.execute('INSERT INTO workouts (ex, reps, dat) VALUES (?, ?, ?)',
                             (ex["title"], num, date['str_dat']))
+                        wos_by_ex_by_date[ex['title']][date['str_dat']] = num
                     conn.commit()
 
             conn.close()
             return redirect(url_for('workout'))
 
     return render_template('workout.html', exs = exs, wos = wos_by_ex_by_date, dates = dates)
+
+#workout page
+@app.route('/workout', methods=('GET', 'POST'))
+def workout():
+    return load_workout()
+    
+
+@app.route('/workout/<int:week_id>')
+def workout_week(week_id):
+    return render_template('workout.html')
 
 #post id numbers pages
 @app.route('/<int:post_id>')

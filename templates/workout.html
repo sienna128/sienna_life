@@ -26,6 +26,21 @@
         <div class="workout-display-scroll">
             <div class="workout-display">
 
+                <!-- Displaying the menu -->
+                <div class="menu-container">
+                    <div class="menu">
+                        <div class="menu-btn back-week">
+                            <a class="menu-link" href="{{url_for('workout')}}"> Last Week </a>
+                        </div>
+                        <div class="menu-btn forward-week">
+                            <a class="menu-link" href="{{url_for('workout')}}"> Next Week </a>
+                        </div>
+                        <div class="menu-btn graphs">
+                            <a class="menu-link" href="{{url_for('workout')}}"> Graphs </a>
+                        </div>
+                    </div>
+                </div>
+
                 <form class="ex-form" name="exercise-content-form" method="post">
                     <input type="hidden" name="form_id" value="form-content"> </input>
 

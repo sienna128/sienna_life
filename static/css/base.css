@@ -7,9 +7,48 @@
     height: 100%;
     margin: 0px;
     padding: 0px;
+    top: 0;
+    bottom: 0;
 
     box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
 
+}
+
+:root {
+    --teal1: rgb(178, 216,216);
+    --teal2: rgb(102, 178, 178);
+    --teal3: rgb(0, 128, 128);
+    --teal4: rgb(0, 102, 103);
+    --teal5: rgb(0, 76, 76);
+
+    --wave1: rgb(97, 172, 238);
+    --wave2: rgb(81, 188, 221);
+    --wave3: rgb(65,204, 204);
+    --wave4: rgb(49, 220, 187);
+    --wave5: rgb(33, 236, 170);
+
+    --teal1: rgb(178, 216, 216);
+    --teal2: rgb(102, 178, 178);
+    --teal3: rgb(0, 128, 128);
+    --green1: rgb(164, 229, 165);
+    --green2: rgb(92, 184, 92);
+    --green3: rgb(45, 135, 50);
+    --aqua1: rgb(224, 247, 250);
+    --aqua2: rgb(0, 172, 193);
+    --aqua3: rgb(0, 124, 145);
+    --mint1: rgb(152, 255, 152);
+    --mint2: rgb(102, 255, 153);
+    --mint3: rgb(60, 179, 113);
+    --sky1: rgb(179, 229, 252);
+    --sky2: rgb(100, 181, 246);
+    --sky3: rgb(2, 136, 209);
+    --turquoise1: rgb(64, 224, 208);
+    --turquoise2: rgb(48, 193, 184);
+    --turquoise3: rgb(32, 161, 158);
+    --navy1: rgb(79, 109, 122);
+    --navy2: rgb(29, 59, 83);
 }
 
 a {
@@ -21,51 +60,55 @@ a {
 a:visited { text-decoration: none; }
 a:hover { text-decoration: none; }
 a:focus { text-decoration: none; }
-a:hover, a:active { text-decoration: none; }
+a:active { text-decoration: none; }
 
 /* base */
 
 .bg-light {
-    background-color: rgb(164, 245, 207);
+    background-color: var(--teal2);
 }
 
 .navbar {
-    display: inline-block;
     height: 15%;
 }
 
-.navbar-brand {
-    text-align: center;
+.navbar-title {
     text-decoration: none;
     color: teal;
-    font-size: 25px;
     width: 100%;
     height: 50%;
-
+    font-size: 2rem;
+    background-color: var(--wave5);
 }
 
 .navbar-bar {
     height: 50%;
+    background-color: teal;
+    background-color: var(--aqua2);
+    
+
 }
 
 .navbar-nav {
     list-style-type: none;
-    background-color: rgb(58, 234, 152);
     display: inline-block;
-    box-sizing: border-box;
+    height: 80%;
 }
 
 .nav-item {
-    box-sizing: border-box;
     width: 12%;
-    height: 80%;
+    height: calc(60%-0.5%);
 
     border-radius: 10px;
-    margin: 10px;
+    margin-left: 1%;
+    margin-right: 1%;
+    margin-top: 0.4%;
+    margin-bottom: 0.25%;
 
     float: left;
 
     display: flex; 
+    flex-shrink: 0;
     justify-content: center;
     align-items: center;
     vertical-align: center;
@@ -76,21 +119,21 @@ a:hover, a:active { text-decoration: none; }
 }
 
 .nav-item.active {
-    background-color: rgb(49, 175, 133);
+    background-color: var(--wave4);
 }
 
 .nav-item:not(.active) {
-    background-color: rgb(49, 175, 175);
+    background-color: var(--wave2);
 
 }
 
 .nav-link {
     display: block;
-    color: teal;
-    background-color: rgb(141, 245, 245);
+    color: var(--navy2);
+    background-color: var(--mint2);
     text-decoration: none;
 
-    padding: 5px;
+    padding: .5%;
     border-radius: 5px;
     text-align: center;
     white-space:normal;
@@ -131,6 +174,7 @@ a:hover, a:active { text-decoration: none; }
 
     border: 30px teal;
     background-color: rgb(8, 79, 110);
+
     
 }
 
@@ -145,12 +189,16 @@ a:hover, a:active { text-decoration: none; }
 .todo-add-btn {
     color: teal;
     height: 5%;
+    text-align: left;
+
 }
 
 .todo {
     margin: 10px;
     padding: 10px;
     height: 10%;
+    text-align: left;
+
 }
 
 /* add to-do */

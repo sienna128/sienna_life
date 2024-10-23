@@ -10,6 +10,7 @@ import datetime
 today = datetime.date.today()
 day_now = today.strftime("%d")
 mon_now = today.strftime("%m")
+today_str = mon_now + "/" + day_now
 
 month_days = {
     "January": 31,
@@ -30,6 +31,22 @@ mon_days = {}
 
 for i, mon in enumerate(month_days):
     mon_days[i+1] = month_days[mon]
+
+year_dates_list = []
+dates_to_day = {}
+
+count = 2
+for mon in mon_days:
+    for day in range(mon_days[mon]):
+        date = str(mon) + "/" + str(day+1)
+        year_dates_list.append(date)
+        dates_to_day[date] = count % 7
+        count += 1
+
+def list_from_date(date):
+    ind = year_dates_list.index(date)
+    new_list = year_dates_list[ind:]
+    return new_list
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
@@ -107,11 +124,44 @@ def create_cal_from_today_days(days):
     conn.commit()
     conn.close()
 
+def create_cal_week_from_date(date):
+    day = dates_to_day[date]
+    #print(dates_to_day)
+    ind = year_dates_list.index(date)
+    week_start_ind = ind - day
 
+    conn = get_db_connection()
+    for i in range(7):
+        str_dat = year_dates_list[week_start_ind + i]
+        #print(str_dat)
+        conn.execute("INSERT INTO dates (str_dat) VALUES (?)",
+                     (str_dat,))
+        
+    conn.commit()
+    conn.close()
 
+def create_week_from_date(date):
+    ind = year_dates_list.index(date)
+    
+
+    conn = get_db_connection()
+
+    dates = []
+    for i in range(7):
+        str_dat = year_dates_list[ind + i]
+        dates.append(str_dat)
+    
+    dates_tup = tuple(dates)
+    conn.execute("INSERT INTO weeks (day1, day2, day3, day4, day5, day6, day7) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                     dates_tup)
+        
+    conn.commit()
+    conn.close()
+
+#create_cal_week_from_date("10/23")
 
             
 def main():
-    create_cal_from_today_days(7)
+    create_cal_week_from_date(today_str)
 
 main()
