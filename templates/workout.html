@@ -30,13 +30,21 @@
                 <div class="menu-container">
                     <div class="menu">
                         <div class="menu-btn back-week">
-                            <a class="menu-link" href="{{url_for('workout')}}"> Last Week </a>
+                            {% if prev_week != [] %}
+                                <a class="menu-link" href="{{url_for('workout', week_id = prev_week.id)}}"> Last Week </a>
+                            {% else %}
+                                <a class="menu-link" href="{{url_for('workout', week_id = week.id)}}"> Last Week </a>
+                            {% endif %}
                         </div>
                         <div class="menu-btn forward-week">
-                            <a class="menu-link" href="{{url_for('workout')}}"> Next Week </a>
+                            {% if next_week != [] %}
+                                <a class="menu-link" href="{{url_for('workout', week_id = next_week.id)}}"> Next Week </a>
+                            {% else %}
+                                <a class="menu-link" href="{{url_for('workout', week_id = week.id)}}">Next Week</a>
+                            {% endif %}
                         </div>
                         <div class="menu-btn graphs">
-                            <a class="menu-link" href="{{url_for('workout')}}"> Graphs </a>
+                            <a class="menu-link" href="{{url_for('workout', week_id = 0)}}"> Graphs </a>
                         </div>
                     </div>
                 </div>
@@ -52,7 +60,7 @@
                         </div>
 
                         <div class="workout-display-dates-content">
-                            {% for date in week %}
+                            {% for date in week.dates %}
                                 <div class="date">
                                     <h2 class="date-str"> {{ date.date }}</h2>
                                 </div>
@@ -71,11 +79,17 @@
                                     <div class = "exercise-name"> <h2> {{ ex.name }} </h2> </div>
 
                                     <div class="exercise-name-content">
-                                        {% for date in week %}
+                                        {% for date in week.dates %}
                                             <div class="exercise-date">
-                                                <input class="exercise-date-in" 
-                                                id="{{ ex['title'] }}-on-{{ date['str_dat'] }}" name="{{ ex['title'] }}-on-{{ date['str_dat'] }}"
-                                                placeholder="{{ 0 }}"> </input> 
+                                                {% for wo, e, d in wos %}
+                                                    {% if e.id==ex.id and d.id==date.id %}
+                                                        <input class="exercise-date-in" 
+                                                                id="{{ ex.name }}-on-{{ date.date }}" 
+                                                                name="{{ ex.name }}-on-{{ date.date }}"
+                                                                value="{{ wo.reps }}"> 
+                                                        </input>
+                                                    {% endif %}
+                                                {% endfor %}                
                                             </div>
                                         {% endfor %}
                                     </div>
