@@ -2,11 +2,13 @@
 <div class="todo-block">
     <h2 class = "todo-title"> To-Do List </h2>
     <a class="todo-add-btn" href="{{url_for('add_todo')}}"> Add To-Do </a>
+
     {% for todo in todos %}
 
-        <h2 class = "todo"> {{todo['title']}}</h2>
+        <h2 class = "todo"> {{ todo.title }}</h2>
 
     {% endfor %}
+
 
 </div>
 

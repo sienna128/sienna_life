@@ -48,120 +48,12 @@ def list_from_date(date):
     new_list = year_dates_list[ind:]
     return new_list
 
-def get_db_connection():
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
 
-def create_cal():
-    conn = get_db_connection()
 
-    for mon in mon_days:
-        for i in range(mon_days[mon]):
-            str_dat = str(mon) + "/" + str(i+1)
-            conn.execute("INSERT INTO dates (mon, da, str_dat) VALUES (?, ?, ?)", 
-                        (str(mon), str(i+1), str_dat)
-                        )
-            
-    conn.commit()
-    conn.close()
-
-def create_cal_from_nov():
-    conn = get_db_connection()
-
-    for mon in mon_days:
-        if mon >= 11:
-            for i in range(mon_days[mon]):
-                str_dat = str(mon) + "/" + str(i+1)
-                conn.execute("INSERT INTO dates (mon, da, str_dat) VALUES (?, ?, ?)", 
-                            (str(mon), str(i+1), str_dat)
-                            )
-            
-    conn.commit()
-    conn.close()
-
-def create_cal_from_today():
-    conn = get_db_connection()
-
-    for mon in mon_days:
-        if mon >= int(mon_now):
-            for i in range(mon_days[mon]):
-                if i+2 > int(day_now):
-                    str_dat = str(mon) + "/" + str(i+1)
-                    conn.execute("INSERT INTO dates (mon, da, str_dat) VALUES (?, ?, ?)", 
-                                (str(mon), str(i+1), str_dat)
-                                )
-            
-    conn.commit()
-    conn.close()
-
-def create_cal_from_today_days(days):
-    #only works if the days are in one or two months, but not for three or more months
-    conn = get_db_connection()
-
-    today = datetime.date.today()
-    day_now = today.strftime("%d")
-    mon_now = today.strftime("%m")
-    day_now = int(day_now)
-    mon_now = int(mon_now)
-    mon_now_days = mon_days[mon_now]
-    
-    days_left = mon_now_days - day_now
-    if days < days_left:
-        for i in range(days):
-            str_dat = str(mon_now) + "/" + str(day_now + i)
-            conn.execute("INSERT INTO dates (mon, da, str_dat) VALUES (?, ?, ?)", 
-                         (str(mon_now), str(day_now + i), str_dat))
-    else:
-        for i in range(days_left):
-            str_dat = str(mon_now) + "/" + str(day_now + i)
-            conn.execute("INSERT INTO dates (mon, da, str_dat) VALUES (?, ?, ?)", 
-                         (str(mon_now), str(day_now + i), str_dat))
-        for i in range(days - days_left):
-            str_dat = str(mon_now + 1) + "/" + str(i + 1)
-            conn.execute("INSERT INTO dates (mon, da, str_dat) VALUES (?, ?, ?)",
-                         str(mon_now + 1), str(i + 1), str_dat)
-    conn.commit()
-    conn.close()
-
-def create_cal_week_from_date(date):
-    day = dates_to_day[date]
-    #print(dates_to_day)
-    ind = year_dates_list.index(date)
-    week_start_ind = ind - day
-
-    conn = get_db_connection()
-    for i in range(7):
-        str_dat = year_dates_list[week_start_ind + i]
-        #print(str_dat)
-        conn.execute("INSERT INTO dates (str_dat) VALUES (?)",
-                     (str_dat,))
-        
-    conn.commit()
-    conn.close()
-
-def create_week_from_date(date):
-    ind = year_dates_list.index(date)
-    
-
-    conn = get_db_connection()
-
-    dates = []
-    for i in range(7):
-        str_dat = year_dates_list[ind + i]
-        dates.append(str_dat)
-    
-    dates_tup = tuple(dates)
-    conn.execute("INSERT INTO weeks (day1, day2, day3, day4, day5, day6, day7) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                     dates_tup)
-        
-    conn.commit()
-    conn.close()
-
-#create_cal_week_from_date("10/23")
 
             
 def main():
-    create_cal_week_from_date(today_str)
+    pass
+    #create_cal_week_from_date(today_str)
 
-main()
+#main()

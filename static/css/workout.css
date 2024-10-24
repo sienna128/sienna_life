@@ -208,6 +208,15 @@ button {
     text-align: center;
 }
 
+/*
 .exercise-date-in::placeholder {
     color: black;
+}*/
+
+.match::placeholder {
+    color:green;
+}
+
+.no-match::placeholder {
+    color: blue;
 }
