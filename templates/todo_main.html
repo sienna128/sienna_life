@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+    {% block css %} <link rel="stylesheet" type="text/css" href="../static/css/todo_main.css" /> {% endblock %}
+    <div class="title-container">
+        <h1 class="title"> To-Do Manager </h1>
+    </div>
+    
+    <!-- adding new todos -->
+    <form class = "form-box" name="new-todo-form" method="post">
+        <input type="hidden" name="form_id" value="form-add"> </input>
+        <div class="add-container">
+            <div class="add-label"> <button class = "form-btn" type="submit" id="new-todo-btn"> <h3> Add New Todo </h3> </button> </div>
+
+            <!-- todo title input -->
+            <div class="inp-con title-container-inp">
+                <label class="new-label title-label" for="todo-title-input"> Title </label>
+                <input class="new-inp title-input" id="new-todo-title-input" name="new-todo-title-input" type="text" 
+                placeholder="Todo Title"> </input>
+            </div>    
+
+            <!-- todo description input -->
+            <div class="inp-con desc-container">
+                <label class="new-label desc-label" for="todo-desc-input"> Description </label>
+                <input class="new-inp desc-input" id="new-todo-desc-input" name="new-todo-desc-input" type="text" 
+                placeholder="Todo Description" value="{{ request.form['desc']}}"> </input>
+            </div>   
+
+            <!-- todo due date input -->
+            <div class="inp-con due-container">
+                <label class="new-label due-label" for="todo-due-input"> Due Date </label>
+                <input class="new-inp due-input" id="new-todo-due-input" name="new-todo-due-input" type="text" 
+                placeholder="Todo Due Date" value="{{ request.form['due']}}"> </input>
+            </div>   
+
+            <!-- todo priority input -->
+            <div class="inp-con pri-container">
+                <label class="new-label pri-label" for="todo-pri-input"> Priority </label>
+                <input class="new-inp pri-input" id="new-todo-pri-input" name="new-todo-pri-input" type="integer" 
+                placeholder="Todo Priority" value="{{ request.form['pri']}}"> </input>
+            </div>  
+        
+        </div>
+    </form>
+
+    <!-- displaying todos -->
+     <div class="todo-display">
+
+        <!-- header titles -->
+        <div class="header">
+
+            <div class="todo-box-info header-con done-con">
+                <h2> Done? </h2>
+            </div>
+            <div class="todo-box-info header-con name-con">
+                <h2> Name </h2>
+            </div>
+            <div class="todo-box-info header-con desc-con">
+                <h2> Description </h2>
+            </div>
+            <div class="todo-box-info header-con due-con">
+                <h2> Due Date</h2>
+            </div>
+            <div class="todo-box-info header-con days-con">
+                <h2> Days Left </h2>
+            </div>
+            <div class="todo-box-info header-con pri-con">
+                <h2> Priority </h2>
+            </div>
+            <div class="todo-box-info header-con scroll-con">
+                <h4> S </h4>
+            </div>
+
+        </div>
+
+        <!-- todos info -->
+        <div class="todos-con">
+            {% for todo in todos %}
+                <div class="todo-con">
+                    <div class="todo-box-info todo-info-con done-con">
+                        <h2> {{ todo.completed }} </h2>
+                    </div>
+                    <div class="todo-box-info todo-info-con name-con">
+                        <h2> {{ todo.title }} </h2>
+                    </div>
+                    <div class="todo-box-info todo-info-con desc-con">
+                        <h2> {{ todo.desc }} </h2>
+                    </div>
+                    <div class="todo-box-info todo-info-con due-con">
+                        <h2> {{ todo.date_d }} </h2>
+                    </div>
+                    <div class="todo-box-info todo-info-con days-con">
+                        <h2> Days Left (not done yet) </h2>
+                    </div>
+                    <div class="todo-box-info todo-info-con pri-con">
+                        <h2> {{ todo.pri }} </h2>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+     </div>
+
+{% endblock %}

@@ -1,0 +1,184 @@
+@import 'colors';
+
+* {
+    font-family: papyrus;
+
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+
+a {
+    text-decoration: none;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+a:visited { text-decoration: none; }
+a:hover { text-decoration: none; }
+a:focus { text-decoration: none; }
+a:active { text-decoration: none; }
+
+button {text-decoration:none; background-color: none; border:none;}
+
+input {
+    text-decoration: none;
+    background-color: none;
+    border: none;
+}
+
+
+/* base */
+
+body {
+    overflow-y: hidden;
+}
+
+
+.bg-light {
+    background-color: $mint3;
+}
+
+.navbar {
+    height: 15%;
+}
+
+.navbar-title {
+    text-decoration: none;
+    color: $teal1;
+    width: 100%;
+    height: 50%;
+    font-size: 2rem;
+    background-color: $light-teal8;
+}
+
+.navbar-bar {
+    height: 50%;
+    background-color: $blue5;
+    
+
+}
+
+.navbar-nav {
+    list-style-type: none;
+    display: inline-block;
+    height: 80%;
+}
+
+.nav-item {
+    width: 12%;
+    height: calc(60%-0.5%);
+
+    border-radius: 10px;
+    margin-left: 1%;
+    margin-right: 1%;
+    margin-top: 0.4%;
+    margin-bottom: 0.25%;
+
+    float: left;
+
+    display: flex; 
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    vertical-align: center;
+}
+
+.nav-item.float-right {
+    float:right;
+}
+
+.nav-item.active {
+    background-color: $mint8;
+}
+
+.nav-item:not(.active) {
+    background-color: $mint5;
+
+}
+
+.nav-link {
+    display: block;
+    color: $blue3;
+    background-color: $light-teal6;
+    text-decoration: none;
+
+    padding: .5%;
+    border-radius: 5px;
+    text-align: center;
+    white-space:normal;
+    overflow:hidden;
+
+    width: 80%;
+    height: 60%;
+
+    transition: all .5s ease;
+
+}
+
+.nav-link:hover {
+    background-color: $light-teal7;
+}
+
+/* main */
+
+.content {
+    display: flex;
+    flex-direction: column;
+
+    background-color: rgb(48, 246, 226);
+}
+
+.header {
+    display: block;
+    height: 10%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* todo */
+
+.todo-block {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    border: 30px teal;
+    background-color: rgb(8, 79, 110);
+
+    
+}
+
+.todo-title {
+    text-align: center;
+    color: teal;
+    display: block;
+    height: 10%;
+
+}
+
+.todo-add-btn {
+    color: teal;
+    height: 5%;
+    text-align: left;
+
+}
+
+.todo {
+    margin: 10px;
+    padding: 10px;
+    height: 10%;
+    text-align: left;
+
+}
+
+/* add to-do */
+
+

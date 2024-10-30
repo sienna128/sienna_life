@@ -1,0 +1,105 @@
+.title-container {
+  height: 7.5%;
+  background-color: #20beaa; }
+
+.form-box {
+  height: 15%; }
+
+.add-container {
+  background-color: aquamarine;
+  border: 5px solid darkcyan;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: row;
+  align-items: center; }
+  .add-container .add-label {
+    width: 10%; }
+    .add-container .add-label button {
+      background-color: #00bfbf;
+      color: turquoise; }
+  .add-container .inp-con {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    border: 5px solid #00cc99;
+    background-color: #a0efe5;
+    border-radius: 3px; }
+  .add-container .title-container-inp {
+    width: 15%; }
+  .add-container .desc-container {
+    width: 40%; }
+  .add-container .due-container {
+    width: 15%; }
+  .add-container .pri-container {
+    width: 10%; }
+  .add-container .new-label {
+    height: 30%;
+    text-align: center; }
+  .add-container .new-inp {
+    height: 70%; }
+
+.todo-display {
+  height: 85%;
+  background-color: lightgreen; }
+  .todo-display .header {
+    display: flex;
+    flex-direction: row;
+    height: 10%; }
+    .todo-display .header .header-con {
+      display: flex; }
+  .todo-display .todos-con {
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll; }
+    .todo-display .todos-con .todo-con {
+      height: 15%;
+      width: 100%;
+      display: flex;
+      flex-direction: row; }
+      .todo-display .todos-con .todo-con .todo-info-con {
+        display: flex; }
+  .todo-display .todo-box-info {
+    border: #00d2d2 solid 5px;
+    border-radius: 3px;
+    background-color: #b2d8d8;
+    overflow-y: auto; }
+    .todo-display .todo-box-info::-webkit-scrollbar {
+      width: 5px; }
+    .todo-display .todo-box-info::-webkit-scrollbar-track {
+      background: #98f098; }
+    .todo-display .todo-box-info::-webkit-scrollbar-thumb {
+      background: #87c4fa;
+      border-radius: 15px; }
+
+.done-con {
+  width: 10%; }
+
+.name-con {
+  width: 15%; }
+
+.desc-con {
+  width: 40%; }
+
+.due-con {
+  width: 15%; }
+
+.days-con {
+  width: 10%; }
+
+.pri-con {
+  width: 10%; }
+
+.scroll-con {
+  width: 20px;
+  font-size: 5px; }
+
+.todos-con::-webkit-scrollbar {
+  width: 20px; }
+
+.todos-con::-webkit-scrollbar-track {
+  background: #98f098; }
+
+.todos-con::-webkit-scrollbar-thumb {
+  background: powderblue;
+  border-radius: 15px; }

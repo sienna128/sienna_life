@@ -1,0 +1,141 @@
+@import 'colors';
+
+
+
+
+.title-container {
+    height: 7.5%;
+    background-color: $teal17;
+}
+
+.form-box {
+    height: 15%;
+}
+
+.add-container {
+
+    background-color: $seagreen6;
+    border: 5px solid $seagreen10;
+    border-radius: 3px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+
+    .add-label {
+        width: 10%;
+
+        button {
+            background-color: $teal5;
+            color: $teal6;
+        }
+    }
+
+    .inp-con {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        
+        border: 5px solid $seagreen13;
+        background-color: $light-teal13;
+        border-radius: 3px;
+
+    }
+
+    .title-container-inp {
+        width:15%;
+    }
+
+    .desc-container {
+        width: 40%;
+    }
+
+    .due-container {
+        width: 15%;
+    }
+
+    .pri-container {
+        width: 10%;
+    }
+
+    .new-label {
+        height: 30%;
+
+        text-align: center;    
+    }
+
+    .new-inp {
+        height:70%;
+    }
+
+}
+
+.todo-display {
+    height: 85%;
+    background-color: $green5;
+
+    .header {
+        display: flex;
+        flex-direction: row;
+        height: 10%;
+
+        .header-con {
+            display: flex;
+            
+        }
+
+    }
+
+    
+
+    .todos-con {
+        height: 90%;
+        display: flex;
+        flex-direction: column;
+        overflow-y: scroll;
+
+
+
+        .todo-con {
+            height: 15%;
+            width:100%;
+            display: flex;
+            flex-direction: row;
+
+            .todo-info-con {
+                display: flex;
+            }
+        }
+            
+    }
+
+    .todo-box-info {
+        border: $teal15 solid 5px;
+        border-radius: 3px;
+        background-color: $light-teal1;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar{width:5px;}
+        &::-webkit-scrollbar-track{background: $mint12;}
+        &::-webkit-scrollbar-thumb{background: $blue18; border-radius: 15px;}
+
+    }
+    
+
+    
+}
+
+.done-con {width: 10%;}
+.name-con {width: 15%;}
+.desc-con {width: 40%;}
+.due-con {width: 15%;}
+.days-con {width: 10%;}
+.pri-con {width: 10%;}
+.scroll-con {width: 20px; font-size: 5px;}
+
+.todos-con::-webkit-scrollbar {width: 20px;}
+.todos-con::-webkit-scrollbar-track{background: $mint12;}
+.todos-con::-webkit-scrollbar-thumb{background: $blue10; border-radius: 15px;}
+
+

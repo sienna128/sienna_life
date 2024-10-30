@@ -1,6 +1,7 @@
 #imports
 import sqlite3
 from flask import Flask, render_template, request, url_for, flash, redirect
+from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import abort
@@ -15,13 +16,56 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = '3.1415926535'
 db = SQLAlchemy(app)
 
-#SQL table class variables
+# Set up Flask-Assets
+assets = Environment(app)
+
+# Define SCSS Bundle
+scss_bundle_base = Bundle(
+    'scss/base.scss',
+    filters='libsass',
+    output='css/base.css'  # Compiled CSS output for base.html
+)
+
+scss_bundle_todo_main = Bundle(
+    'scss/todo_main.scss',
+    filters='libsass',
+    output='css/todo_main.css'  # Compiled CSS output for todo_main.html
+)
+
+scss_bundle_add_todo = Bundle(
+    'scss/add_todo.scss',
+    filters='libsass',
+    output='css/add_todo.css'  # Compiled CSS output for add_todo.html
+)
+
+scss_bundle_workout = Bundle(
+    'scss/workout.scss',
+    filters='libsass',
+    output='css/workout.css'  # Compiled CSS output for workout.html
+)
+
+# Register each bundle with a unique name
+assets.register('base_css', scss_bundle_base)
+assets.register('todo_main_css', scss_bundle_todo_main)
+assets.register('add_todo_css', scss_bundle_add_todo)
+assets.register('workout_css', scss_bundle_workout)
+
+
+#---------SQL table class variables----------
 class ToDo(db.Model):
     __tablename__ = 'todos'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text, nullable=False)
-    task = db.Column(db.Text, nullable=False)
-    completed = db.Column(db.Boolean, default=False)
+    desc = db.Column(db.Text, nullable=False)
+    comp = db.Column(db.Boolean, default=False)
+    pri = db.Column(db.Integer, nullable=False)
+    
+    #date stuff
+    date_e = db.Column(db.Text, nullable=False)
+    date_e_form = db.Column(db.Date, nullable=False)
+    date_d = db.Column(db.Text, nullable=False)
+    date_d_form = db.Column(db.Date, nullable=False)
+    
 
 class Exercise(db.Model):
     __tablename__ = 'exercises'
@@ -90,6 +134,13 @@ def create_weeks_from_oct():
             db.session.add_all(dates)
             db.session.commit()
 
+def date_str_to_form(ds):
+    dss = ds.split("/")
+    dm = int(dss[0])
+    dd = int(dss[1])
+    df = date(2024, dm, dd)
+    return df
+
 
 def calc_cur_week():
     with app.app_context():
@@ -104,85 +155,25 @@ def create_tables():
 
     if not Exercise.query.first():
         exercise1 = Exercise(name='Pushups')
-        #exercise2 = Exercise(name='Squat')
         exercise2 = Exercise(name='Pullups')
 
         db.session.add_all([exercise1, exercise2])
         db.session.commit()
 
-    """
-    if not Date.query.first():
-        date1 = Date(date='10/23')
-        date2 = Date(date='10/24')
-        date3 = Date(date='10/25')
-        date4 = Date(date='10/26')
-        date5 = Date(date='10/27')
-        date6 = Date(date='10/28')
-        date7 = Date(date='10/29')
-
-        db.session.add_all([date1, date2, date3, date4, date5, date6, date7])
-        db.session.commit()
-
-    if not Workout.query.first():
-        workout1 = Workout(date_id=1, reps=15, ex_id=1)
-        workout2 = Workout(date_id=2, reps=20, ex_id=2)
-        workout3 = Workout(date_id=3, reps=10, ex_id=3)
-
-        db.session.add_all([workout1, workout2, workout3])
-        db.session.commit() """
-
     if not ToDo.query.first():
-        todo1 = ToDo(title='Grocery Shopping', task='Buy milk, eggs, and bread', completed=False)
-        todo2 = ToDo(title='Reading', task='Read the new novel by my favorite author', completed=True)
-        todo3 = ToDo(title='Flask Project', task='Complete the Flask application for the ToDo list', completed=False)
+        todo1 = ToDo(title='Flask Project', desc='Complete the Flask application for the ToDo list', comp=False, pri=0, date_e="10/25", date_e_form=date_str_to_form("10/25"), date_d="12/31", date_d_form=date_str_to_form("12/31"))
 
-        db.session.add_all([todo1, todo2, todo3])
+        db.session.add(todo1)
         db.session.commit()
 
-
-#BEFORE FIRST REQUEST FUNCTION
-@app.before_request
-def initialize_app():
-    app.before_request_funcs[None].remove(initialize_app)
-    create_tables()
-    create_weeks_from_oct()
-    cur_date, cur_week = calc_cur_week()
-    now.cur_date = cur_date
-    now.cur_week = cur_week
-
-#main page
-@app.route('/')
-def index():
-    #prep functions
-    #posts = conn.execute('SELECT * FROM posts').fetchall()
-    todos = ToDo.query.all()
-    return render_template('main.html', todos=todos)
-
-#add todo page
-@app.route('/add_todo', methods=('GET', 'POST'))
-def add_todo():
-    if request.method == 'POST':
-        title = request.form['title']
-        descr = request.form['descr']
-
-        if not title:
-            flash('Title is required!')
-            return redirect(url_for('add_todo'))
-        else:
-            new_todo = ToDo(title=title, task=descr)
-            db.session.add(new_todo)
-            db.session.commit()
-
-            flash('new todo added successfully', 'success')
-            return redirect(url_for('index'))
-    return render_template('add_todo.html')
-
+#----PAGE FUNCTIONS---------
 def load_workout(week_id):
     exs = Exercise.query.all()
 
     #handle week variables
     if week_id == 0:
         week = now.cur_week
+        print(week)
         week_id = week.id
     else:
         week = Week.query.filter(Week.id == week_id).first()
@@ -304,71 +295,55 @@ def load_workout(week_id):
     #return render_template('workout.html', wos = wos, week = now.cur_week)
     return render_template('workout.html', exs = exs, wos = wos, week = week, prev_week = prev_week, next_week = next_week)
 
-#workout page
-"""
-@app.route('/workout', methods=('GET', 'POST'))
-def workout(week_id):
-    return load_workout() """
-    
+def load_todo():
+    todos = ToDo.query.all()
 
+    if request.method == "POST":
+        #get information
+        title = request.form['new-todo-title-input']
+        desc = request.form['new-todo-desc-input']
+        due = request.form['new-todo-due-input']
+        pri = request.form['new-todo-pri-input']
+
+        #calculate information
+        dd_f = date_str_to_form(due)
+        date_e = p.today_str
+        de_f = date_str_to_form(date_e)
+
+        #add new todo
+        new_todo = ToDo(title=title, desc=desc, comp=False, pri=pri, date_e=date_e, date_e_form=de_f, date_d=due, date_d_form=dd_f)
+        db.session.add(new_todo)
+        db.session.commit()
+        return redirect(url_for('todo'))
+
+    return render_template('todo_main.html', todos = todos)
+
+#BEFORE FIRST REQUEST FUNCTION
+@app.before_request
+def initialize_app():
+    #print("init")
+    app.before_request_funcs[None].remove(initialize_app)
+    create_tables()
+    create_weeks_from_oct()
+    cur_date, cur_week = calc_cur_week()
+    now.cur_date = cur_date
+    now.cur_week = cur_week
+
+#----------PAGES------------------
+
+#main page
+@app.route('/')
+def index():
+    todos = ToDo.query.all()
+    return render_template('main.html', todos=todos)
+
+#workout page
 @app.route('/workout/<int:week_id>', methods=('GET', 'POST'))
 def workout(week_id):
     return load_workout(week_id=week_id)
 
-#post id numbers pages
-@app.route('/<int:post_id>')
-def post(post_id):
-    post = get_post(post_id)
-    return render_template('post.html', post=post)
+#todo page
+@app.route('/todo', methods=('GET', 'POST'))
+def todo():
+    return load_todo()
 
-
-#create page
-@app.route('/create', methods=('GET', 'POST'))
-def create():
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-
-        if not title:
-            flash('Title is required!')
-        else:
-            conn = get_db_connection()
-            conn.execute('INSERT INTO posts (title, content) VALUES (?, ?)',
-                         (title, content))
-            conn.commit()
-            conn.close()
-            return redirect(url_for('index'))
-    return render_template('create.html')
-
-#edit post pages
-@app.route('/<int:id>/edit', methods=('GET', 'POST'))
-def edit(id):
-    post = get_post(id)
-
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-
-        if not title:
-            flash('Title is required!')
-        else:
-            conn = get_db_connection()
-            conn.execute('UPDATE posts SET title = ?, content = ?'
-                         ' WHERE id = ?',
-                         (title, content, id))
-            conn.commit()
-            conn.close()
-            return redirect(url_for('index'))
-
-    return render_template('edit.html', post=post)
-
-#delete page/button
-@app.route('/<int:id>/delete', methods=('POST',))
-def delete(id):
-    post = get_post(id)
-    conn = get_db_connection()
-    conn.execute('DELETE FROM posts WHERE id = ?', (id,))
-    conn.commit()
-    conn.close()
-    flash('"{}" was successfully deleted!'.format(post['title']))
-    return redirect(url_for('index'))
