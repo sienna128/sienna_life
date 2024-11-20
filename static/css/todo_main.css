@@ -1,9 +1,43 @@
-.title-container {
+.header-title {
+  display: flex;
+  flex-direction: row;
   height: 7.5%;
   background-color: #20beaa; }
+  .header-title .header-block {
+    border: 5px #00ffbf solid;
+    border-radius: 3px; }
+  .header-title .title-container {
+    width: 50%; }
+  .header-title .left-menu {
+    width: 25%; }
+  .header-title .right-menu {
+    width: 25%; }
+
+.add-stuff-con {
+  display: flex;
+  flex-direction: row;
+  height: 15%; }
 
 .form-box {
-  height: 15%; }
+  width: 85%; }
+
+.cat-form {
+  width: 15%;
+  background-color: #32dcb1;
+  border: 5px solid darkcyan; }
+  .cat-form .cat-name-con {
+    display: flex;
+    flex-direction: column;
+    border: 5px solid #00cc99;
+    border-radius: 3px; }
+    .cat-form .cat-name-con .cat-btn-con {
+      height: 30%; }
+      .cat-form .cat-name-con .cat-btn-con button {
+        background-color: #a0efe5; }
+        .cat-form .cat-name-con .cat-btn-con button:hover {
+          background-color: #21ec78; }
+    .cat-form .cat-name-con .name-inp {
+      height: 70%; }
 
 .add-container {
   background-color: aquamarine;
@@ -16,7 +50,15 @@
     width: 10%; }
     .add-container .add-label button {
       background-color: #00bfbf;
-      color: turquoise; }
+      color: turquoise;
+      justify-content: center;
+      display: flex;
+      align-items: center; }
+      .add-container .add-label button:hover {
+        background-color: #20beaa; }
+      .add-container .add-label button h3 {
+        text-align: center;
+        margin: 0; }
   .add-container .inp-con {
     display: flex;
     flex-direction: column;
@@ -31,7 +73,9 @@
   .add-container .due-container {
     width: 15%; }
   .add-container .pri-container {
-    width: 10%; }
+    width: 5%; }
+  .add-container .cat-container {
+    width: 15%; }
   .add-container .new-label {
     height: 30%;
     text-align: center; }
@@ -46,7 +90,15 @@
     flex-direction: row;
     height: 10%; }
     .todo-display .header .header-con {
-      display: flex; }
+      display: flex;
+      flex-direction: row; }
+      .todo-display .header .header-con h2 {
+        width: 80%; }
+      .todo-display .header .header-con .header-sort {
+        width: 20%;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer; }
   .todo-display .todos-con {
     height: 90%;
     display: flex;
@@ -56,9 +108,47 @@
       height: 15%;
       width: 100%;
       display: flex;
-      flex-direction: row; }
+      flex-direction: row;
+      flex-shrink: 0; }
       .todo-display .todos-con .todo-con .todo-info-con {
-        display: flex; }
+        justify-content: center; }
+        .todo-display .todos-con .todo-con .todo-info-con .checkbox-con {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          width: 100%;
+          /* Adjust this width as needed */ }
+          .todo-display .todos-con .todo-con .todo-info-con .checkbox-con input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            /* Ensures checkbox input takes up full width for easy clicking */
+            height: 100%;
+            cursor: pointer; }
+          .todo-display .todos-con .todo-con .todo-info-con .checkbox-con .checkmark {
+            width: 32.375%;
+            /* Size of the visible checkmark box */
+            height: 50%;
+            background-color: darkcyan;
+            border-radius: 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto; }
+          .todo-display .todos-con .todo-con .todo-info-con .checkbox-con input[type="checkbox"]:checked + .checkmark {
+            background-color: darkcyan;
+            /* Change color when checked */ }
+          .todo-display .todos-con .todo-con .todo-info-con .checkbox-con .checkmark::after {
+            content: "";
+            width: 50%;
+            height: 50%;
+            display: none;
+            border: solid #bcecd8;
+            border-width: 0 0.2em 0.2em 0;
+            transform: rotate(-45deg) scaleX(-1); }
+          .todo-display .todos-con .todo-con .todo-info-con .checkbox-con input[type="checkbox"]:checked + .checkmark::after {
+            display: inline-block; }
   .todo-display .todo-box-info {
     border: #00d2d2 solid 5px;
     border-radius: 3px;
@@ -75,14 +165,17 @@
 .done-con {
   width: 10%; }
 
+.cat-con {
+  width: 10%; }
+
 .name-con {
   width: 15%; }
 
 .desc-con {
-  width: 40%; }
+  width: 35%; }
 
 .due-con {
-  width: 15%; }
+  width: 10%; }
 
 .days-con {
   width: 10%; }

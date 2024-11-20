@@ -9,6 +9,10 @@ import datetime
 
 today = datetime.date.today()
 day_now = today.strftime("%d")
+
+#never have a day start with 0 ex: 11/05 -> 11/5
+if day_now[0] == "0":
+    day_now = day_now[1]
 mon_now = today.strftime("%m")
 today_str = mon_now + "/" + day_now
 

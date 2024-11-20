@@ -1,3 +1,5 @@
+#----------------------SET UP------------------------------------------------------
+
 #imports
 import sqlite3
 from flask import Flask, render_template, request, url_for, flash, redirect
@@ -51,7 +53,9 @@ assets.register('add_todo_css', scss_bundle_add_todo)
 assets.register('workout_css', scss_bundle_workout)
 
 
-#---------SQL table class variables----------
+#-------------SQL table class variables---------------------------
+
+#todo page
 class ToDo(db.Model):
     __tablename__ = 'todos'
     id = db.Column(db.Integer, primary_key=True)
@@ -65,8 +69,23 @@ class ToDo(db.Model):
     date_e_form = db.Column(db.Date, nullable=False)
     date_d = db.Column(db.Text, nullable=False)
     date_d_form = db.Column(db.Date, nullable=False)
-    
+    days_left = db.Column(db.Integer, nullable = False, default=0)
 
+    #category stuff
+    cat_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False, default=1)
+    cat_name = db.Column(db.Text)
+
+    def calc_days_left(self):
+        diff = date_str_to_form(self.date_d) - date_str_to_form(p.today_str)
+        self.days_left = diff.days
+
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
+    todos = db.relationship('ToDo', backref='categories', lazy=True)        
+    
+#workout page
 class Exercise(db.Model):
     __tablename__ = 'exercises'
     id = db.Column(db.Integer, primary_key=True)
@@ -82,7 +101,7 @@ class Workout(db.Model):
     ex_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable = False)
     date_id = db.Column(db.Integer, db.ForeignKey('dates.id'), nullable = False)
 
-
+#date and time stuff
 class Date(db.Model):
     __tablename__ = 'dates'
     id = db.Column(db.Integer, primary_key=True)
@@ -93,9 +112,10 @@ class Date(db.Model):
 class Week(db.Model):
     __tablename__ = 'weeks'
     id = db.Column(db.Integer, primary_key=True)
-    ydl_ind = db.Column(db.Integer)
-
     dates = db.relationship('Date', backref='week', lazy=True)
+
+
+#--------------------- PREPARATION -----------------------------------------
 
 #global variables
 class Now():
@@ -103,6 +123,23 @@ class Now():
     cur_week = None
 
 now = Now()
+
+def calc_cur_week():
+    with app.app_context():
+        #print(p.today_str)
+        cur_date = Date.query.filter_by(date=p.today_str).first()
+        cur_week = Week.query.options(joinedload(Week.dates)).filter_by(id=cur_date.week_id).first()
+        return cur_date, cur_week
+    
+calc_cur_week()
+    
+def date_str_to_form(ds):
+    dss = ds.split("/")
+    dm = int(dss[0])
+    dd = int(dss[1])
+    df = date(2024, dm, dd)
+    return df
+
 
 #create weeks starting at oct
 def create_weeks_from_oct():
@@ -134,22 +171,11 @@ def create_weeks_from_oct():
             db.session.add_all(dates)
             db.session.commit()
 
-def date_str_to_form(ds):
-    dss = ds.split("/")
-    dm = int(dss[0])
-    dd = int(dss[1])
-    df = date(2024, dm, dd)
-    return df
 
 
-def calc_cur_week():
-    with app.app_context():
-        cur_date = Date.query.filter_by(date=p.today_str).first()
-        cur_week = Week.query.options(joinedload(Week.dates)).filter_by(id=cur_date.week_id).first()
-        return cur_date, cur_week
-
-#initial functions
-def create_tables():
+#old create tables for exercises
+#DO NOT USE WILL DELETE DATA
+def create_tables_ex_old():
     db.drop_all()
     db.create_all()
 
@@ -160,20 +186,30 @@ def create_tables():
         db.session.add_all([exercise1, exercise2])
         db.session.commit()
 
+def create_tables():
+
+    if not Category.query.first():
+        cat1 = Category(name='Random')
+        db.session.add(cat1)
+        db.session.commit()
+
     if not ToDo.query.first():
-        todo1 = ToDo(title='Flask Project', desc='Complete the Flask application for the ToDo list', comp=False, pri=0, date_e="10/25", date_e_form=date_str_to_form("10/25"), date_d="12/31", date_d_form=date_str_to_form("12/31"))
+        cat1 = Category.query.first()
+        todo1 = ToDo(title='Flask Project', desc='Complete the Flask application for the ToDo list', comp=False, pri=0, date_e="10/25", date_e_form=date_str_to_form("10/25"), date_d="12/31", date_d_form=date_str_to_form("12/31"), cat_id = cat1.id)
 
         db.session.add(todo1)
         db.session.commit()
 
-#----PAGE FUNCTIONS---------
+
+
+#------------------PAGE FUNCTIONS-----------------------------------------
 def load_workout(week_id):
     exs = Exercise.query.all()
 
     #handle week variables
     if week_id == 0:
         week = now.cur_week
-        print(week)
+        #print(week)
         week_id = week.id
     else:
         week = Week.query.filter(Week.id == week_id).first()
@@ -181,24 +217,24 @@ def load_workout(week_id):
     if week_id - 1 >= 1:
         prev_week = Week.query.filter(Week.id == week_id - 1).first()
     else:
-        print("too far back")
+        #print("too far back")
         prev_week = []
     
     if week_id + 1 <= 12:
         next_week = Week.query.filter(Week.id == week_id + 1).first()
     else:
-        print("too far forwawrd")
+        #("too far forwawrd")
         next_week = []
 
     start_date = week.dates[0]
     end_date = week.dates[-1]
 
-    print("week id", week_id)
+    #print("week id", week_id)
     for date in week.dates:
         print("date: ", date.date)
 
-    print("p", prev_week)
-    print("n", next_week)
+    #print("p", prev_week)
+    #print("n", next_week)
 
 
     #initialize database and make sure there is a value for every workout
@@ -212,15 +248,15 @@ def load_workout(week_id):
             .first()
             )
 
-            print("loop", ex.name, date.date, wo)
+            #print("loop", ex.name, date.date, wo)
 
             if wo:
                 wo_inst = wo[0]
                 pass
-                print("in data", wo[0].id, ex.name, date.date, wo[0].reps)
-                print("compare", wo_inst.ex_id, ex.id, wo_inst.date_id, date.id)
+                #print("in data", wo[0].id, ex.name, date.date, wo[0].reps)
+                #print("compare", wo_inst.ex_id, ex.id, wo_inst.date_id, date.id)
             else:
-                print("not in date")
+                #print("not in date")
                 new_workout = Workout(ex_id=ex.id, date_id=date.id, reps=0)
                 #print(date.date >= start_date, date.date <= end_date)
                 db.session.add(new_workout)            
@@ -235,12 +271,13 @@ def load_workout(week_id):
     .filter(Date.date_form >= start_date.date_form, Date.date_form <= end_date.date_form)
     .all()
     )
-    print("cur len", len(wos))
+    #print("cur len", len(wos))
             
 
-    print("\n\nmiddle")
+    #print("\n\nmiddle")
     for wo, e, d in wos:
-        print(wo.id, e.name, d.date, wo.reps)
+        #print(wo.id, e.name, d.date, wo.reps)
+        pass
 
     if request.method == "POST":
         
@@ -259,13 +296,13 @@ def load_workout(week_id):
         elif form_id == 'form-content':
             for ex in exs:
                 for date in week.dates:
-                    print("info", ex.name, date.date)
+                    #print("info", ex.name, date.date)
                     
 
                     str_find = ex.name + "-on-" + date.date
                     num = request.form.get(str_find)
 
-                    print("num_ori", num, type(num))
+                    #print("num_ori", num, type(num))
                     
                     if num != "":
                         num = int(num)
@@ -296,40 +333,99 @@ def load_workout(week_id):
     return render_template('workout.html', exs = exs, wos = wos, week = week, prev_week = prev_week, next_week = next_week)
 
 def load_todo():
+    
     todos = ToDo.query.all()
+    cats = Category.query.all()
 
+    #put a category for each todo
+    for todo in todos:
+        todo.calc_days_left()
+        for cat in cats:
+            if cat.id == todo.cat_id:
+                todo.cat_name = cat.name
+        
+    #handle form stuff
     if request.method == "POST":
-        #get information
-        title = request.form['new-todo-title-input']
-        desc = request.form['new-todo-desc-input']
-        due = request.form['new-todo-due-input']
-        pri = request.form['new-todo-pri-input']
 
-        #calculate information
-        dd_f = date_str_to_form(due)
-        date_e = p.today_str
-        de_f = date_str_to_form(date_e)
+        form_id = request.form['form_id']
+        #print("fi", form_id)
 
-        #add new todo
-        new_todo = ToDo(title=title, desc=desc, comp=False, pri=pri, date_e=date_e, date_e_form=de_f, date_d=due, date_d_form=dd_f)
-        db.session.add(new_todo)
-        db.session.commit()
+        if form_id == 'todo-add':
+            #get information
+            title = request.form['new-todo-title-input']
+            desc = request.form['new-todo-desc-input']
+            due = request.form['new-todo-due-input']
+            pri = request.form['new-todo-pri-input']
+            cat_name = request.form['new-todo-cat-input']
+            #print("CAT", cat)
+
+            #calculate date information
+            dd_f = date_str_to_form(due)
+            date_e = p.today_str
+            de_f = date_str_to_form(date_e)
+
+            #calculate category information
+            for cat in cats:
+                if cat_name == cat.name:
+                    cat_id = cat.id
+
+            #add new todo
+            new_todo = ToDo(title=title, desc=desc, comp=False, pri=pri, date_e=date_e, date_e_form=de_f, date_d=due, date_d_form=dd_f, cat_id=cat_id, cat_name=cat_name)
+            db.session.add(new_todo)
+            db.session.commit()
+
+        elif form_id == "cat-add":
+            name = request.form['new-cat-input']
+            #print("\nADDING: ", name)
+            new_cat = Category(name=name)
+            db.session.add(new_cat)
+            db.session.commit()
+
+        todos = ToDo.query.all()
+        cats = Category.query.all()
+        return render_template('todo_main.html', todos=todos, cats=cats)
+
         return redirect(url_for('todo'))
+    
+    return render_template('todo_main.html', todos = todos, cats=cats)
 
-    return render_template('todo_main.html', todos = todos)
+def load_todo_sort(sort_cat, order):
+    todos = ToDo.query.all()
+    cats = Category.query.all()
+
+    
+    #sort the sort category
+    if sort_cat == "category":
+        sort_attr = ToDo.cat_name
+    elif sort_cat == "name":
+        sort_attr = ToDo.title
+
+    todos_sorted = (
+        ToDo.query
+        .join(Category)
+        .order_by(sort_attr, ToDo.date_d_form)
+        .all()
+    )
+
+    #todo_form_handling()
+
+    return render_template('todo_main.html', todos = todos, cats=cats)
+
+
+
 
 #BEFORE FIRST REQUEST FUNCTION
 @app.before_request
 def initialize_app():
     #print("init")
     app.before_request_funcs[None].remove(initialize_app)
-    create_tables()
+    
     create_weeks_from_oct()
     cur_date, cur_week = calc_cur_week()
     now.cur_date = cur_date
     now.cur_week = cur_week
 
-#----------PAGES------------------
+#---------------------PAGES-----------------------------------
 
 #main page
 @app.route('/')
@@ -346,4 +442,9 @@ def workout(week_id):
 @app.route('/todo', methods=('GET', 'POST'))
 def todo():
     return load_todo()
+
+#todo page sort
+@app.route('/todo/sort/<string:sort_cat>/<string:order>', methods=('GET', 'POST'))
+def todo_sort(sort_cat, order):
+    return load_todo_sort(sort_cat, order)
 
