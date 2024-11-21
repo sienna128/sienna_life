@@ -111,44 +111,14 @@
       flex-direction: row;
       flex-shrink: 0; }
       .todo-display .todos-con .todo-con .todo-info-con {
-        justify-content: center; }
+        justify-content: center;
+        align-items: center;
+        display: flex; }
         .todo-display .todos-con .todo-con .todo-info-con .checkbox-con {
+          height: 75%;
+          width: 50%;
           display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          width: 100%;
-          /* Adjust this width as needed */ }
-          .todo-display .todos-con .todo-con .todo-info-con .checkbox-con input[type="checkbox"] {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            /* Ensures checkbox input takes up full width for easy clicking */
-            height: 100%;
-            cursor: pointer; }
-          .todo-display .todos-con .todo-con .todo-info-con .checkbox-con .checkmark {
-            width: 32.375%;
-            /* Size of the visible checkmark box */
-            height: 50%;
-            background-color: darkcyan;
-            border-radius: 20%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: auto; }
-          .todo-display .todos-con .todo-con .todo-info-con .checkbox-con input[type="checkbox"]:checked + .checkmark {
-            background-color: darkcyan;
-            /* Change color when checked */ }
-          .todo-display .todos-con .todo-con .todo-info-con .checkbox-con .checkmark::after {
-            content: "";
-            width: 50%;
-            height: 50%;
-            display: none;
-            border: solid #bcecd8;
-            border-width: 0 0.2em 0.2em 0;
-            transform: rotate(-45deg) scaleX(-1); }
-          .todo-display .todos-con .todo-con .todo-info-con .checkbox-con input[type="checkbox"]:checked + .checkmark::after {
-            display: inline-block; }
+          background-color: #14a89e; }
   .todo-display .todo-box-info {
     border: #00d2d2 solid 5px;
     border-radius: 3px;

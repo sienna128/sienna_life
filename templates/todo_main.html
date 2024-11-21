@@ -144,12 +144,13 @@
         <div class="todos-con">
             {% for todo in todos %}
                 <div class="todo-con">
+
                     <div class="todo-box-info todo-info-con done-con">
-                        <label class="checkbox-con">
-                            <input type="checkbox" />
-                            <span class="checkmark"></span>
-                        </label>
+                        <div class="checkbox-con" id="checkbox-container-{{todo.id}}">
+                            <img src="{{ url_for('static', filename='images/' + ('teal_checkmark.png' if todo.comp else 'teal_uncheckmark.png')) }}" alt="teal_checkmark" id="checkbox-img-{{ todo.id }}">
+                        </div>
                     </div>
+
                     <div class="todo-box-info todo-info-con cat-con">
                         <h2> {{ todo.cat_name }} </h2>
                     </div>
@@ -163,7 +164,7 @@
                         <h2> {{ todo.date_d }} </h2>
                     </div>
                     <div class="todo-box-info todo-info-con days-con">
-                        <h2> {{ todo.days_left }} </h2>
+                        <h2 id="days-{{ todo.id }}"> {{ todo.days_left }} </h2>
                     </div>
                     <div class="todo-box-info todo-info-con pri-con">
                         <h2> {{ todo.pri }} </h2>
@@ -174,3 +175,5 @@
      </div>
 
 {% endblock %}
+
+{% block js_end %} <script type="text/javascript" src="{{ url_for('static', filename='js/todo.js') }}"> </script> {% endblock %}

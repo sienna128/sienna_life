@@ -2,7 +2,7 @@
 
 #imports
 import sqlite3
-from flask import Flask, render_template, request, url_for, flash, redirect
+from flask import Flask, render_template, request, url_for, flash, redirect, jsonify
 from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
@@ -76,8 +76,11 @@ class ToDo(db.Model):
     cat_name = db.Column(db.Text)
 
     def calc_days_left(self):
-        diff = date_str_to_form(self.date_d) - date_str_to_form(p.today_str)
-        self.days_left = diff.days
+        if self.comp:
+            self.days_left = 0 
+        else:
+            diff = date_str_to_form(self.date_d) - date_str_to_form(p.today_str)
+            self.days_left = diff.days
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -199,6 +202,11 @@ def create_tables():
 
         db.session.add(todo1)
         db.session.commit()
+
+def clear_table(model):
+    model.query.delete()
+    db.session.commit()
+    
 
 
 
@@ -383,9 +391,12 @@ def load_todo():
 
         todos = ToDo.query.all()
         cats = Category.query.all()
-        return render_template('todo_main.html', todos=todos, cats=cats)
 
         return redirect(url_for('todo'))
+    
+        return render_template('todo_main.html', todos=todos, cats=cats)
+
+        
     
     return render_template('todo_main.html', todos = todos, cats=cats)
 
@@ -419,7 +430,8 @@ def load_todo_sort(sort_cat, order):
 def initialize_app():
     #print("init")
     app.before_request_funcs[None].remove(initialize_app)
-    
+    #clear_table(ToDo)
+    #clear_table(Category)
     create_weeks_from_oct()
     cur_date, cur_week = calc_cur_week()
     now.cur_date = cur_date
@@ -447,4 +459,29 @@ def todo():
 @app.route('/todo/sort/<string:sort_cat>/<string:order>', methods=('GET', 'POST'))
 def todo_sort(sort_cat, order):
     return load_todo_sort(sort_cat, order)
+
+#todo checkbox ajax
+@app.route('/update-todo-checkbox', methods=["POST"])
+def update_todo_checkbox():
+
+    data=request.get_json()
+    todo_id = data['todo_id']
+    is_checked = data['checked']
+
+    todo = ToDo.query.get(todo_id)
+    if todo:
+        todo.comp = is_checked
+        todo.calc_days_left()
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "todo_id": todo_id, 
+            "checked": is_checked,
+            "days_left": todo.days_left}), 200
+    else:
+        return jsonify({
+            'success': False,
+            'message': 'Todo not found'
+        }), 404
 

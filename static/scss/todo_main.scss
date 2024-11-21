@@ -187,53 +187,19 @@
 
             .todo-info-con {
                 justify-content: center;
+                align-items: center;
+                display: flex;
+
                 .checkbox-con {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    position: relative;
-                    width: 100%; /* Adjust this width as needed */
-
-                    input[type="checkbox"] {
-                        position: absolute;
-                        opacity: 0;
-                        width: 100%; /* Ensures checkbox input takes up full width for easy clicking */
-                        height: 100%;
-                        cursor: pointer;
-                    }
-
-                    .checkmark {
-                        width: 32.375%; /* Size of the visible checkmark box */
-                        height: 50%;
-                        background-color: $seagreen10;
-                        border-radius: 20%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        margin: auto;
-                    }
-
-                    input[type="checkbox"]:checked + .checkmark {
-                        background-color: $seagreen10; /* Change color when checked */
-                    }
-
-                    .checkmark::after {
-                        content: "";
+                        height: 75%;
                         width: 50%;
-                        height: 50%;
-                        display: none;
-                        border: solid $light-teal11;
-                        border-width: 0 0.2em 0.2em 0;
-                        transform: rotate(-45deg) scaleX(-1);
-                    }
-
-                    input[type="checkbox"]:checked + .checkmark::after {
-                        display: inline-block;
-                    }
+                        display: flex;
+                        background-color: $teal18;
                 }
             }
         }
     }
+
 
     .todo-box-info {
         border: $teal15 solid 5px;
@@ -259,3 +225,4 @@
 .todos-con::-webkit-scrollbar { width: 20px; }
 .todos-con::-webkit-scrollbar-track { background: $mint12; }
 .todos-con::-webkit-scrollbar-thumb { background: $blue10; border-radius: 15px; }
+
