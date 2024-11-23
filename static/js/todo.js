@@ -32,7 +32,7 @@ document.querySelectorAll('.checkbox-con').forEach(function(container) {
         .then(data => {
             console.log("here", data.success)
             if (data.success) {
-                const days_elem = document.querySelector(`#days-${todoId}`)
+                const days_elem = document.querySelector(`#days-l-${todoId}`)
                 if (days_elem) {
                     days_elem.textContent = data.days_left;
                     console.log("days elem found")

@@ -69,18 +69,27 @@ class ToDo(db.Model):
     date_e_form = db.Column(db.Date, nullable=False)
     date_d = db.Column(db.Text, nullable=False)
     date_d_form = db.Column(db.Date, nullable=False)
+
+    days_so_far = db.Column(db.Integer, nullable = False, default=0)
     days_left = db.Column(db.Integer, nullable = False, default=0)
 
     #category stuff
     cat_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False, default=1)
     cat_name = db.Column(db.Text)
 
-    def calc_days_left(self):
+    def calc_days(self):
+        diff_sf = date_str_to_form(p.today_str) - date_str_to_form(self.date_e)
+        self.days_so_far = diff_sf.days
+
         if self.comp:
             self.days_left = 0 
         else:
-            diff = date_str_to_form(self.date_d) - date_str_to_form(p.today_str)
-            self.days_left = diff.days
+            diff_l = date_str_to_form(self.date_d) - date_str_to_form(p.today_str)
+            self.days_left = diff_l.days
+
+        #print("\n\n", self.days_so_far, self.days_left)
+
+
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -189,7 +198,7 @@ def create_tables_ex_old():
         db.session.add_all([exercise1, exercise2])
         db.session.commit()
 
-def create_tables():
+def create_todo_ex():
 
     if not Category.query.first():
         cat1 = Category(name='Random')
@@ -202,6 +211,10 @@ def create_tables():
 
         db.session.add(todo1)
         db.session.commit()
+
+def reset_db():
+    db.drop_all()
+    db.create_all()
 
 def clear_table(model):
     model.query.delete()
@@ -340,64 +353,60 @@ def load_workout(week_id):
     #return render_template('workout.html', wos = wos, week = now.cur_week)
     return render_template('workout.html', exs = exs, wos = wos, week = week, prev_week = prev_week, next_week = next_week)
 
+def todo_form_handling(request, cats):
+
+    form_id = request.form['form_id']
+    #print("fi", form_id)
+
+    if form_id == 'todo-add':
+        #get information
+        title = request.form['new-todo-title-input']
+        desc = request.form['new-todo-desc-input']
+        due = request.form['new-todo-due-input']
+        pri = request.form['new-todo-pri-input']
+        cat_name = request.form['new-todo-cat-input']
+        #print("CAT", cat)
+
+        #calculate date information
+        dd_f = date_str_to_form(due)
+        date_e = p.today_str
+        de_f = date_str_to_form(date_e)
+
+        #calculate category information
+        cat = Category.query.filter_by(name=cat_name).first()
+        cat_id = cat.id if cat else None
+
+        #add new todo
+        new_todo = ToDo(title=title, desc=desc, comp=False, pri=pri, date_e=date_e, date_e_form=de_f, date_d=due, date_d_form=dd_f, cat_id=cat_id, cat_name=cat_name)
+        db.session.add(new_todo)
+        db.session.commit()
+
+    elif form_id == "cat-add":
+        name = request.form['new-cat-input']
+        #print("\nADDING: ", name)
+        new_cat = Category(name=name)
+        db.session.add(new_cat)
+        db.session.commit()
+
+    return redirect(url_for('todo'))
+
 def load_todo():
-    
     todos = ToDo.query.all()
     cats = Category.query.all()
 
+    if request.method == "POST":
+        return todo_form_handling(request, cats)
+
     #put a category for each todo
     for todo in todos:
-        todo.calc_days_left()
+        todo.calc_days()
         for cat in cats:
             if cat.id == todo.cat_id:
                 todo.cat_name = cat.name
+
+    todos = ToDo.query.all()
+    cats = Category.query.all()
         
-    #handle form stuff
-    if request.method == "POST":
-
-        form_id = request.form['form_id']
-        #print("fi", form_id)
-
-        if form_id == 'todo-add':
-            #get information
-            title = request.form['new-todo-title-input']
-            desc = request.form['new-todo-desc-input']
-            due = request.form['new-todo-due-input']
-            pri = request.form['new-todo-pri-input']
-            cat_name = request.form['new-todo-cat-input']
-            #print("CAT", cat)
-
-            #calculate date information
-            dd_f = date_str_to_form(due)
-            date_e = p.today_str
-            de_f = date_str_to_form(date_e)
-
-            #calculate category information
-            for cat in cats:
-                if cat_name == cat.name:
-                    cat_id = cat.id
-
-            #add new todo
-            new_todo = ToDo(title=title, desc=desc, comp=False, pri=pri, date_e=date_e, date_e_form=de_f, date_d=due, date_d_form=dd_f, cat_id=cat_id, cat_name=cat_name)
-            db.session.add(new_todo)
-            db.session.commit()
-
-        elif form_id == "cat-add":
-            name = request.form['new-cat-input']
-            #print("\nADDING: ", name)
-            new_cat = Category(name=name)
-            db.session.add(new_cat)
-            db.session.commit()
-
-        todos = ToDo.query.all()
-        cats = Category.query.all()
-
-        return redirect(url_for('todo'))
-    
-        return render_template('todo_main.html', todos=todos, cats=cats)
-
-        
-    
     return render_template('todo_main.html', todos = todos, cats=cats)
 
 def load_todo_sort(sort_cat, order):
@@ -410,6 +419,14 @@ def load_todo_sort(sort_cat, order):
         sort_attr = ToDo.cat_name
     elif sort_cat == "name":
         sort_attr = ToDo.title
+    elif sort_cat == "due_date":
+        sort_attr = ToDo.date_d_form
+    elif sort_cat == "days_so_far":
+        sort_attr = ToDo.days_so_far
+    elif sort_cat == "days_left":
+        sort_attr = ToDo.days_left
+    elif sort_cat == "priority":
+        sort_attr = ToDo.pri
 
     todos_sorted = (
         ToDo.query
@@ -418,9 +435,20 @@ def load_todo_sort(sort_cat, order):
         .all()
     )
 
+    if order=="down":
+        todos_sorted.reverse()
+
+    
+
+    print("\n\n\n type:", type(todos_sorted))
+
+    print("\n\n\n list")
+    for todo in todos_sorted:
+        print(todo.id)
+
     #todo_form_handling()
 
-    return render_template('todo_main.html', todos = todos, cats=cats)
+    return render_template('todo_main.html', todos = todos_sorted, cats=cats)
 
 
 
@@ -432,6 +460,7 @@ def initialize_app():
     app.before_request_funcs[None].remove(initialize_app)
     #clear_table(ToDo)
     #clear_table(Category)
+    #reset_db()
     create_weeks_from_oct()
     cur_date, cur_week = calc_cur_week()
     now.cur_date = cur_date
@@ -471,7 +500,7 @@ def update_todo_checkbox():
     todo = ToDo.query.get(todo_id)
     if todo:
         todo.comp = is_checked
-        todo.calc_days_left()
+        todo.calc_days()
         db.session.commit()
 
         return jsonify({

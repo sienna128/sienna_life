@@ -38,7 +38,20 @@
             <input type="hidden" name="form_id" value="todo-add"> </input>
             <div class="add-container">
                 <div class="add-label"> <button class = "form-btn" type="submit" id="new-todo-btn"> <h3> Add New Todo </h3> </button> </div>
+                
+                <!-- todo category -->
+                <div class="inp-con cat-container">
+                    <label class="new-label cat-label" for="todo-cat-input"> Category </label>
+                    <select id="new-todo-cat-input" name="new-todo-cat-input" class="dropdown" required>
+                        <option value="" disabled selected> Select a category </option>
+                        {% for cat in cats %}
+                            <option value="{{cat.name}}"> {{ cat.name }} </option>
+                        {% endfor %}
 
+                    </select>
+                    
+                </div>
+                
                 <!-- todo title input -->
                 <div class="inp-con title-container-inp">
                     <label class="new-label title-label" for="todo-title-input"> Title </label>
@@ -67,18 +80,7 @@
                     placeholder="Todo Priority" value="{{ request.form['pri']}}"> </input>
                 </div>  
 
-                <!-- todo category -->
-                <div class="inp-con cat-container">
-                    <label class="new-label cat-label" for="todo-cat-input"> Category </label>
-                    <select id="new-todo-cat-input" name="new-todo-cat-input" class="dropdown" required>
-                        <option value="" disabled selected> Select a category </option>
-                        {% for cat in cats %}
-                            <option value="{{cat.name}}"> {{ cat.name }} </option>
-                        {% endfor %}
-
-                    </select>
-                    
-                </div>  
+                  
             
             </div>
         </form>
@@ -96,44 +98,59 @@
             <div class="todo-box-info header-con done-con">
                 <h2> Done? </h2>
             </div>
+
             <div class="todo-box-info header-con cat-con">
                 <h2> Category </h2>
                 <div class="header-sort">
-                    <div class="header-sort-up"> <a href="{{ url_for('todo_sort', sort_cat='category', order='up') }}"> ▲ </a></div>
-                    <div class="header-sort-down">▼</div>
+                    <div class="header-sort-up"> <a href="{{ url_for('todo_sort', sort_cat='category', order='up') }}"> ▲ </a> </div>
+                    <div class="header-sort-down"> <a href="{{ url_for('todo_sort', sort_cat='category', order='down') }}"> ▼ </a> </div>
                 </div>
             </div>
+
             <div class="todo-box-info header-con name-con">
                 <h2> Name </h2>
                 <div class="header-sort">
-                    <div class="header-sort-up"> <a href="{{ url_for('todo_sort', sort_cat='name', order='up') }}"> ▲ </a></div>
-                    <div class="header-sort-down">▼</div>
+                    <div class="header-sort-up"> <a href="{{ url_for('todo_sort', sort_cat='name', order='up') }}"> ▲ </a> </div>
+                    <div class="header-sort-down"> <a href="{{ url_for('todo_sort', sort_cat='name', order='down') }}"> ▼ </a> </div>
                 </div>
+
             </div>
             <div class="todo-box-info header-con desc-con">
                 <h2> Description </h2>
             </div>
+
             <div class="todo-box-info header-con due-con">
                 <h3> Due Date</h3>
                 <div class="header-sort">
-                    <div class="header-sort-up"> <a href="{{ url_for('todo_sort', sort_cat='description', order='up') }}"> ▲ </a></div>
-                    <div class="header-sort-down">▼</div>
+                    <div class="header-sort-up"> <a href="{{ url_for('todo_sort', sort_cat='due_date', order='up') }}"> ▲ </a></div>
+                    <div class="header-sort-down"> <a href="{{ url_for('todo_sort', sort_cat='due_date', order='down') }}"> ▼ </a></div>
                 </div>
             </div>
-            <div class="todo-box-info header-con days-con">
+
+            <div class="todo-box-info header-con daysf-con">
+                <h3> Days So Far </h3>
+                <div class="header-sort">
+                    <div class="header-sort-up"> <a href="{{ url_for('todo_sort', sort_cat='days_so_far', order='up') }}"> ▲ </a></div>
+                    <div class="header-sort-down"> <a href="{{ url_for('todo_sort', sort_cat='days_so_far', order='down') }}"> ▼ </a></div>
+                </div>
+            </div>
+
+            <div class="todo-box-info header-con daysl-con">
                 <h3> Days Left </h3>
                 <div class="header-sort">
                     <div class="header-sort-up"> <a href="{{ url_for('todo_sort', sort_cat='days_left', order='up') }}"> ▲ </a></div>
-                    <div class="header-sort-down">▼</div>
+                    <div class="header-sort-down"> <a href="{{ url_for('todo_sort', sort_cat='days_left', order='down') }}"> ▼ </a></div>
                 </div>
             </div>
+
             <div class="todo-box-info header-con pri-con">
                 <h2> Priority </h2>
                 <div class="header-sort">
                     <div class="header-sort-up"> <a href="{{ url_for('todo_sort', sort_cat='priority', order='up') }}"> ▲ </a></div>
-                    <div class="header-sort-down">▼</div>
+                    <div class="header-sort-down"> <a href="{{ url_for('todo_sort', sort_cat='priority', order='down') }}"> ▼ </a></div>
                 </div>
             </div>
+
             <div class="todo-box-info header-con scroll-con">
                 <h4> S </h4>
             </div>
@@ -163,8 +180,11 @@
                     <div class="todo-box-info todo-info-con due-con">
                         <h2> {{ todo.date_d }} </h2>
                     </div>
-                    <div class="todo-box-info todo-info-con days-con">
-                        <h2 id="days-{{ todo.id }}"> {{ todo.days_left }} </h2>
+                    <div class="todo-box-info todo-info-con daysf-con">
+                        <h2 id="days-sf-{{ todo.id }}"> {{ todo.days_so_far }} </h2>
+                    </div>
+                    <div class="todo-box-info todo-info-con daysl-con">
+                        <h2 id="days-l-{{ todo.id }}"> {{ todo.days_left }} </h2>
                     </div>
                     <div class="todo-box-info todo-info-con pri-con">
                         <h2> {{ todo.pri }} </h2>
