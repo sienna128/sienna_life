@@ -460,7 +460,7 @@ def initialize_app():
     app.before_request_funcs[None].remove(initialize_app)
     #clear_table(ToDo)
     #clear_table(Category)
-    #reset_db()
+    reset_db()
     create_weeks_from_oct()
     cur_date, cur_week = calc_cur_week()
     now.cur_date = cur_date
