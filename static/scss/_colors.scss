@@ -1,0 +1,147 @@
+//variables by element name
+
+
+
+//COLORS
+
+// Greens
+$green1: rgb(0, 100, 0); // Dark green
+$green2: rgb(0, 128, 0); // Green
+$green3: rgb(34, 139, 34); // Forest green
+$green4: rgb(60, 179, 113); // Medium sea green
+$green5: rgb(144, 238, 144); // Light green
+$green6: rgb(152, 251, 152); // Pale green
+$green7: rgb(0, 255, 0); // Lime green
+$green8: rgb(50, 205, 50); // Lime green
+$green9: rgb(127, 255, 0); // Chartreuse
+$green10: rgb(0, 205, 0); // Medium green
+
+// Extended Greens
+$green11: rgb(0, 150, 0); // Slightly lighter dark green
+$green12: rgb(0, 180, 0); // Bright green
+$green13: rgb(34, 150, 34); // Darker forest green
+$green14: rgb(60, 200, 113); // Brighter medium sea green
+$green15: rgb(144, 250, 144); // Brighter light green
+$green16: rgb(152, 255, 152); // Brighter pale green
+$green17: rgb(0, 255, 60); // Vibrant lime green
+$green18: rgb(50, 225, 50); // Bright lime green
+$green19: rgb(127, 200, 0); // Olive green
+$green20: rgb(0, 255, 100); // Bright chartreuse
+
+// Mint Greens
+$mint1: rgb(189, 252, 201); // Mint green
+$mint2: rgb(152, 255, 152); // Light mint green
+$mint3: rgb(102, 255, 178); // Mint teal
+$mint4: rgb(0, 255, 191); // Bright mint
+$mint5: rgb(0, 230, 189); // Soft mint
+$mint6: rgb(64, 224, 208); // Light teal
+$mint7: rgb(46, 139, 87); // Sea green
+$mint8: rgb(0, 245, 220); // Bright aqua mint
+$mint9: rgb(135, 211, 124); // Soft mint green
+$mint10: rgb(173, 255, 47); // Light mint chartreuse
+
+// Extended Mint Greens
+$mint11: rgb(170, 252, 201); // Lighter mint green
+$mint12: rgb(152, 240, 152); // Bright mint green
+$mint13: rgb(102, 255, 200); // Mint aqua
+$mint14: rgb(0, 255, 230); // Bright mint teal
+$mint15: rgb(0, 200, 189); // Darker mint teal
+$mint16: rgb(64, 240, 208); // Bright light teal
+$mint17: rgb(46, 190, 87); // Brighter sea green
+$mint18: rgb(0, 255, 240); // Vivid aqua mint
+$mint19: rgb(155, 221, 124); // Soft mint green
+$mint20: rgb(200, 255, 47); // Vibrant mint chartreuse
+
+// Teals
+$teal1: rgb(0, 128, 128); // Teal
+$teal2: rgb(0, 139, 139); // Dark teal
+$teal3: rgb(0, 184, 184); // Medium teal
+$teal4: rgb(0, 153, 153); // Bright teal
+$teal5: rgb(0, 191, 191); // Light teal
+$teal6: rgb(64, 224, 208); // Aqua teal
+$teal7: rgb(32, 178, 170); // Light sea green
+$teal8: rgb(20, 158, 158); // Darker teal
+$teal9: rgb(72, 209, 204); // Bright aqua teal
+$teal10: rgb(0, 206, 209); // Light aqua teal
+
+// Extended Teals
+$teal11: rgb(0, 150, 150); // Lighter teal
+$teal12: rgb(0, 180, 180); // Bright medium teal
+$teal13: rgb(0, 220, 220); // Brighter teal
+$teal14: rgb(0, 170, 170); // Darker medium teal
+$teal15: rgb(0, 210, 210); // Vivid teal
+$teal16: rgb(64, 240, 208); // Brighter aqua teal
+$teal17: rgb(32, 190, 170); // Soft light sea green
+$teal18: rgb(20, 168, 158); // Muted teal
+$teal19: rgb(80, 220, 204); // Bright aqua green
+$teal20: rgb(0, 220, 209); // Bright aqua teal
+
+// Light Teals
+$light-teal1: rgb(178, 216, 216); // Soft light teal
+$light-teal2: rgb(102, 178, 178); // Light teal
+$light-teal3: rgb(142, 229, 229); // Bright soft teal
+$light-teal4: rgb(97, 172, 238); // Light aqua blue
+$light-teal5: rgb(81, 188, 221); // Light turquoise
+$light-teal6: rgb(65, 204, 204); // Bright light teal
+$light-teal7: rgb(49, 220, 187); // Bright sea foam
+$light-teal8: rgb(33, 236, 170); // Vivid aqua green
+$light-teal9: rgb(0, 245, 232); // Bright aqua mint
+$light-teal10: rgb(173, 216, 230); // Light sky blue
+
+// Extended Light Teals
+$light-teal11: rgb(188, 236, 216); // Light soft teal
+$light-teal12: rgb(120, 188, 178); // Darker light teal
+$light-teal13: rgb(160, 239, 229); // Soft aqua blue
+$light-teal14: rgb(100, 182, 238); // Soft aqua teal
+$light-teal15: rgb(80, 198, 221); // Bright light turquoise
+$light-teal16: rgb(60, 224, 204); // Light aqua green
+$light-teal17: rgb(50, 220, 177); // Soft aqua green
+$light-teal18: rgb(33, 236, 120); // Bright aqua mint
+$light-teal19: rgb(5, 255, 232); // Bright aqua mint
+$light-teal20: rgb(190, 226, 230); // Light sky blue
+
+// Blues
+$blue1: rgb(0, 0, 255); // Blue
+$blue2: rgb(0, 0, 204); // Dark blue
+$blue3: rgb(0, 0, 191); // Medium blue
+$blue4: rgb(0, 102, 204); // Medium dark blue
+$blue5: rgb(0, 138, 255); // Bright blue
+$blue6: rgb(30, 144, 255); // Dodger blue
+$blue7: rgb(70, 130, 180); // Steel blue
+$blue8: rgb(135, 206, 250); // Light sky blue
+$blue9: rgb(173, 216, 230); // Light blue
+$blue10: rgb(176, 224, 230); // Light slate blue
+
+// Extended Blues
+$blue11: rgb(0, 50, 255); // Bright medium blue
+$blue12: rgb(0, 50, 204); // Bright dark blue
+$blue13: rgb(0, 50, 191); // Bright medium blue
+$blue14: rgb(0, 120, 204); // Darker bright blue
+$blue15: rgb(0, 158, 255); // Lighter bright blue
+$blue16: rgb(30, 144, 255); // Bright Dodger blue
+$blue17: rgb(70, 130, 160); // Darker steel blue
+$blue18: rgb(135, 196, 250); // Soft light sky blue
+$blue19: rgb(173, 206, 230); // Light azure
+$blue20: rgb(176, 220, 200); // Light azure
+
+// Sea Greens
+$seagreen1: rgb(46, 139, 87); // Sea green
+$seagreen2: rgb(32, 178, 170); // Light sea green
+$seagreen3: rgb(0, 255, 127); // Spring green
+$seagreen4: rgb(0, 128, 128); // Teal
+$seagreen5: rgb(0, 204, 204); // Dark turquoise
+$seagreen6: rgb(127, 255, 212); // Aquamarine
+$seagreen7: rgb(72, 209, 204); // Medium turquoise
+$seagreen8: rgb(64, 224, 208); // Light teal
+$seagreen9: rgb(102, 205, 170); // Medium sea green
+$seagreen10: rgb(0, 139, 139); // Dark cyan
+$seagreen11: rgb(0, 255, 164); // Bright sea green
+$seagreen12: rgb(46, 204, 113); // Emerald green
+$seagreen13: rgb(0, 204, 153); // Dark sea green
+$seagreen14: rgb(173, 255, 47); // Light chartreuse
+$seagreen15: rgb(112, 219, 147); // Light medium sea green
+$seagreen16: rgb(152, 251, 152); // Pale green
+$seagreen17: rgb(142, 229, 229); // Light aquamarine
+$seagreen18: rgb(102, 178, 170); // Light turquoise
+$seagreen19: rgb(150, 222, 191); // Soft sea green
+$seagreen20: rgb(0, 191, 165); // Deep sea green

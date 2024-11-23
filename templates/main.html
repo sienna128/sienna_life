@@ -2,15 +2,15 @@
 
 {% block content %}
 
-    <link rel="stylesheet" type="text/css" href="../static/css/base.css" />
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
     <div class="content">
         <h1 class="header">{% block title %} Welcome to Sienna's Life {% endblock %}</h1>
     
         <!-- inherited to do content-->
         {% block todo %} {% endblock %}
     
-        {% include 'todo.html' %}
+        {% include 'todo_mini.html' %}
     </div>
 
 {% endblock %}

@@ -1,0 +1,171 @@
+.header-title {
+  display: flex;
+  flex-direction: row;
+  height: 7.5%;
+  background-color: #20beaa; }
+  .header-title .header-block {
+    border: 5px #00ffbf solid;
+    border-radius: 3px; }
+  .header-title .title-container {
+    width: 50%; }
+  .header-title .left-menu {
+    width: 25%; }
+  .header-title .right-menu {
+    width: 25%; }
+
+.add-stuff-con {
+  display: flex;
+  flex-direction: row;
+  height: 15%; }
+
+.form-box {
+  width: 85%; }
+
+.cat-form {
+  width: 15%;
+  background-color: #32dcb1;
+  border: 5px solid darkcyan; }
+  .cat-form .cat-name-con {
+    display: flex;
+    flex-direction: column;
+    border: 5px solid #00cc99;
+    border-radius: 3px; }
+    .cat-form .cat-name-con .cat-btn-con {
+      height: 30%; }
+      .cat-form .cat-name-con .cat-btn-con button {
+        background-color: #a0efe5; }
+        .cat-form .cat-name-con .cat-btn-con button:hover {
+          background-color: #21ec78; }
+    .cat-form .cat-name-con .name-inp {
+      height: 70%; }
+
+.add-container {
+  background-color: aquamarine;
+  border: 5px solid darkcyan;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: row;
+  align-items: center; }
+  .add-container .add-label {
+    width: 10%; }
+    .add-container .add-label button {
+      background-color: #00bfbf;
+      color: turquoise;
+      justify-content: center;
+      display: flex;
+      align-items: center; }
+      .add-container .add-label button:hover {
+        background-color: #20beaa; }
+      .add-container .add-label button h3 {
+        text-align: center;
+        margin: 0; }
+  .add-container .inp-con {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    border: 5px solid #00cc99;
+    background-color: #a0efe5;
+    border-radius: 3px; }
+  .add-container .title-container-inp {
+    width: 15%; }
+  .add-container .desc-container {
+    width: 40%; }
+  .add-container .due-container {
+    width: 15%; }
+  .add-container .pri-container {
+    width: 5%; }
+  .add-container .cat-container {
+    width: 15%; }
+  .add-container .new-label {
+    height: 30%;
+    text-align: center; }
+  .add-container .new-inp {
+    height: 70%; }
+
+.todo-display {
+  height: 85%;
+  background-color: lightgreen; }
+  .todo-display .header {
+    display: flex;
+    flex-direction: row;
+    height: 10%; }
+    .todo-display .header .header-con {
+      display: flex;
+      flex-direction: row; }
+      .todo-display .header .header-con h2 {
+        width: 80%; }
+      .todo-display .header .header-con .header-sort {
+        width: 20%;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer; }
+  .todo-display .todos-con {
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll; }
+    .todo-display .todos-con .todo-con {
+      height: 15%;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-shrink: 0; }
+      .todo-display .todos-con .todo-con .todo-info-con {
+        justify-content: center;
+        align-items: center;
+        display: flex; }
+        .todo-display .todos-con .todo-con .todo-info-con .checkbox-con {
+          height: 75%;
+          width: 50%;
+          display: flex;
+          background-color: #14a89e; }
+  .todo-display .todo-box-info {
+    border: #00d2d2 solid 5px;
+    border-radius: 3px;
+    background-color: #b2d8d8;
+    overflow-y: auto; }
+    .todo-display .todo-box-info::-webkit-scrollbar {
+      width: 5px; }
+    .todo-display .todo-box-info::-webkit-scrollbar-track {
+      background: #98f098; }
+    .todo-display .todo-box-info::-webkit-scrollbar-thumb {
+      background: #87c4fa;
+      border-radius: 15px; }
+
+.done-con {
+  width: 10%; }
+
+.cat-con {
+  width: 10%; }
+
+.name-con {
+  width: 15%; }
+
+.desc-con {
+  width: 35%; }
+
+.due-con {
+  width: 10%; }
+
+.daysf-con {
+  width: 5%; }
+
+.daysl-con {
+  width: 5%; }
+
+.pri-con {
+  width: 10%; }
+
+.scroll-con {
+  width: 20px;
+  font-size: 5px; }
+
+.todos-con::-webkit-scrollbar {
+  width: 20px; }
+
+.todos-con::-webkit-scrollbar-track {
+  background: #98f098; }
+
+.todos-con::-webkit-scrollbar-thumb {
+  background: powderblue;
+  border-radius: 15px; }
