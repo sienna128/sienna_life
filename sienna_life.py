@@ -46,11 +46,18 @@ scss_bundle_workout = Bundle(
     output='css/workout.css'  # Compiled CSS output for workout.html
 )
 
+scss_bundle_routine = Bundle(
+    'scss/routine.scss',
+    filters='libsass',
+    output='css/routine.css'  # Compiled CSS output for workout.html
+)
+
 # Register each bundle with a unique name
 assets.register('base_css', scss_bundle_base)
 assets.register('todo_main_css', scss_bundle_todo_main)
 assets.register('add_todo_css', scss_bundle_add_todo)
 assets.register('workout_css', scss_bundle_workout)
+assets.register('routine_css', scss_bundle_routine)
 
 
 #-------------SQL table class variables---------------------------
@@ -89,8 +96,6 @@ class ToDo(db.Model):
 
         #print("\n\n", self.days_so_far, self.days_left)
 
-
-
 class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
@@ -125,6 +130,38 @@ class Week(db.Model):
     __tablename__ = 'weeks'
     id = db.Column(db.Integer, primary_key=True)
     dates = db.relationship('Date', backref='week', lazy=True)
+
+
+#routine stuff
+class Task(db.Model):
+    __tablename__ = 'tasks'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
+    desc = db.Column(db.Text, nullable=False)
+
+    cat_id = db.Column(db.Integer, db.ForeignKey('task_categories.id'), nullable=False, default=1)
+    cat_name = db.Column(db.Text)
+    records = db.relationship('TaskRecord', backref='task', lazy=True)
+
+class TaskRecord(db.Model):
+    __tablename__ = 'task_records'
+    id = db.Column(db.Integer, primary_key=True)
+    comp = db.Column(db.Boolean, default=False)
+
+    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=False)
+    date_id = db.Column(db.Integer, db.ForeignKey('dates.id'), nullable=False)
+
+class TaskCategory(db.Model):
+    __tablename__ = 'task_categories'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
+    tasks = db.relationship('Task', backref='task_categories', lazy=True)
+
+
+class Routine(db.Model):
+    __tablename__ = 'routines'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
 
 
 #--------------------- PREPARATION -----------------------------------------
@@ -184,7 +221,6 @@ def create_weeks_from_oct():
             db.session.commit()
 
 
-
 #old create tables for exercises
 #DO NOT USE WILL DELETE DATA
 def create_tables_ex_old():
@@ -219,6 +255,20 @@ def reset_db():
 def clear_table(model):
     model.query.delete()
     db.session.commit()
+
+def calc_prev_and_next_weeks(week_id):
+    if week_id - 1 >= 1:
+        prev_week = Week.query.filter(Week.id == week_id - 1).first()
+    else:
+        #print("too far back")
+        prev_week = []
+    
+    if week_id + 1 <= 12:
+        next_week = Week.query.filter(Week.id == week_id + 1).first()
+    else:
+        #("too far forwawrd")
+        next_week = []
+    return prev_week, next_week
     
 
 
@@ -235,24 +285,14 @@ def load_workout(week_id):
     else:
         week = Week.query.filter(Week.id == week_id).first()
 
-    if week_id - 1 >= 1:
-        prev_week = Week.query.filter(Week.id == week_id - 1).first()
-    else:
-        #print("too far back")
-        prev_week = []
-    
-    if week_id + 1 <= 12:
-        next_week = Week.query.filter(Week.id == week_id + 1).first()
-    else:
-        #("too far forwawrd")
-        next_week = []
+    prev_week, next_week = calc_prev_and_next_weeks(week_id)
 
     start_date = week.dates[0]
     end_date = week.dates[-1]
 
     #print("week id", week_id)
-    for date in week.dates:
-        print("date: ", date.date)
+    #for date in week.dates:
+    #    print("date: ", date.date)
 
     #print("p", prev_week)
     #print("n", next_week)
@@ -413,7 +453,9 @@ def load_todo_sort(sort_cat, order):
     todos = ToDo.query.all()
     cats = Category.query.all()
 
-    
+    if request.method == "POST":
+        return todo_form_handling(request, cats)
+
     #sort the sort category
     if sort_cat == "category":
         sort_attr = ToDo.cat_name
@@ -438,19 +480,61 @@ def load_todo_sort(sort_cat, order):
     if order=="down":
         todos_sorted.reverse()
 
-    
-
     print("\n\n\n type:", type(todos_sorted))
 
     print("\n\n\n list")
     for todo in todos_sorted:
         print(todo.id)
 
-    #todo_form_handling()
-
     return render_template('todo_main.html', todos = todos_sorted, cats=cats)
 
 
+def routine_form_handling(cats):
+    form_id = request.form['form_id']
+
+    if form_id == "cat-add":
+        name = request.form['new-cat-input']
+        new_cat = TaskCategory(name=name)
+        db.session.add(new_cat)
+        db.session.commit()
+
+    elif form_id == 'task-add':
+        name = request.form['task-name']
+        desc = request.form['task-desc']
+        cat_name = request.form['add-cat-select']
+
+        for cat in cats:
+            if cat.name == cat_name:
+                cat_id = cat.id
+
+        new_task = Task(name=name, desc=desc, cat_id = cat_id, cat_name=cat_name)
+        db.session.add(new_task)
+        db.session.commit()
+    
+    return redirect(url_for('routine', week_id = 0))
+    
+
+def load_routine(week_id):
+    if week_id == 0:
+        week = now.cur_week
+        week_id = week.id
+    else:
+        week = Week.query.filter(Week.id == week_id).first()
+
+    prev_week, next_week = calc_prev_and_next_weeks(week_id)
+
+    tasks = Task.query.all()
+    task_records = TaskRecord.query.all()
+    cats = TaskCategory.query.all()
+
+    if request.method == "POST":
+        return routine_form_handling(cats)
+
+    tasks = Task.query.all()
+    task_records = TaskRecord.query.all()
+    cats = TaskCategory.query.all()
+
+    return render_template('routine_main.html', ts = tasks, week = week, trs = task_records, cats=cats)
 
 
 #BEFORE FIRST REQUEST FUNCTION
@@ -460,7 +544,9 @@ def initialize_app():
     app.before_request_funcs[None].remove(initialize_app)
     #clear_table(ToDo)
     #clear_table(Category)
-    reset_db()
+    #clear_table(Task)
+    #clear_table(TaskCategory)
+    #reset_db()
     create_weeks_from_oct()
     cur_date, cur_week = calc_cur_week()
     now.cur_date = cur_date
@@ -513,4 +599,11 @@ def update_todo_checkbox():
             'success': False,
             'message': 'Todo not found'
         }), 404
+    
+
+#routine page
+@app.route('/routine/<int:week_id>', methods=('GET', 'POST'))
+def routine(week_id):
+    return load_routine(week_id=week_id)
+
 

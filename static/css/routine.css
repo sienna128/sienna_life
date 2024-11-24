@@ -1,0 +1,91 @@
+.content {
+  display: flex;
+  flex-direction: column; }
+
+.header {
+  height: 5%; }
+
+.add-section {
+  height: 10%;
+  display: flex;
+  flex-direction: row;
+  border: 5px solid #0000bf;
+  border-radius: 3px; }
+  .add-section .cat-sec {
+    width: 30%;
+    border: 3px solid #0000cc;
+    border-radius: 2px; }
+    .add-section .cat-sec .cat-name-con {
+      display: flex;
+      flex-direction: row; }
+  .add-section .task-sec {
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    border: 3px solid blue;
+    border-radius: 2px; }
+    .add-section .task-sec .add-task-form {
+      display: flex;
+      flex-direction: row; }
+      .add-section .task-sec .add-task-form .form-label {
+        width: 30%;
+        display: flex; }
+      .add-section .task-sec .add-task-form .form-input {
+        width: 40%;
+        display: flex; }
+      .add-section .task-sec .add-task-form .add-cat {
+        width: 30%;
+        display: flex; }
+
+.display {
+  height: 85%;
+  display: flex;
+  flex-direction: column; }
+  .display .display-header {
+    height: 10%;
+    display: flex;
+    flex-direction: row; }
+    .display .display-header .blank {
+      width: 20%; }
+    .display .display-header .dates-header {
+      width: 80%;
+      display: flex;
+      flex-direction: row;
+      border: 5px solid #0000bf;
+      border-radius: 2px; }
+      .display .display-header .dates-header .date {
+        width: 10%; }
+  .display .tasks-display {
+    height: 90%;
+    display: flex;
+    flex-direction: column; }
+    .display .tasks-display .cat-con {
+      height: 40%;
+      display: flex;
+      flex-direction: column;
+      border: 5px solid black;
+      border-radius: 2px; }
+      .display .tasks-display .cat-con .cat-title {
+        height: 20%;
+        display: flex;
+        flex-direction: row; }
+        .display .tasks-display .cat-con .cat-title .cat-title-text {
+          width: 20%; }
+        .display .tasks-display .cat-con .cat-title .cat-title-blank {
+          width: 80%; }
+      .display .tasks-display .cat-con .cat-tasks {
+        height: 80%;
+        display: flex;
+        flex-direction: column;
+        border: 5px solid black;
+        border-radius: 2px; }
+        .display .tasks-display .cat-con .cat-tasks .cat-task {
+          height: 40%;
+          display: flex;
+          flex-direction: row;
+          border: 5px solid black;
+          border-radius: 2px; }
+          .display .tasks-display .cat-con .cat-tasks .cat-task .task-name {
+            width: 20%; }
+          .display .tasks-display .cat-con .cat-tasks .cat-task .task-info {
+            width: 80%; }

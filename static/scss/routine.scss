@@ -1,0 +1,138 @@
+@import 'colors';
+
+.content {
+    display:flex;
+    flex-direction:column;
+}
+
+.header {
+    height:5%;
+}
+
+.add-section {
+    height:10%;
+    display: flex;
+    flex-direction: row;
+
+    border: 5px solid $blue3;
+    border-radius: 3px;
+
+    .cat-sec {
+        width: 30%;
+        border: 3px solid $blue2;
+        border-radius: 2px;
+
+        .cat-name-con {
+            display:flex;
+            flex-direction:row;
+        }
+    }
+
+    .task-sec {
+        width: 70%;
+        display: flex;
+        flex-direction: row;
+
+        border: 3px solid $blue1;
+        border-radius: 2px;
+
+        .add-task-form {
+            display: flex;
+            flex-direction: row;
+
+            .form-label {width: 30%; display:flex;}
+            .form-input {width: 40%; display:flex;}
+            .add-cat {
+                width: 30%;
+                display: flex;
+            }
+
+        }
+
+    }
+
+}
+
+
+.display {
+    height: 85%;
+    display: flex;
+    flex-direction: column;
+
+    .display-header {
+        height: 10%;
+        display: flex;
+        flex-direction:row;
+
+        .blank {width: 20%;}
+        .dates-header {
+            width: 80%;
+            display: flex;
+            flex-direction: row;
+
+            border: 5px solid $blue3;
+            border-radius: 2px;
+            
+            .date {
+                width: 10%;
+            }
+
+        }
+
+    }
+
+    .tasks-display {
+        height: 90%;
+        display: flex;
+        flex-direction: column;
+
+        .cat-con {
+            height: 40%;
+            display: flex;
+            flex-direction: column;
+            border: 5px solid black;
+            border-radius: 2px;
+
+            .cat-title {
+                height: 20%;
+                display: flex;
+                flex-direction: row;
+
+                .cat-title-text {
+                    width: 20%;
+                }
+
+                .cat-title-blank{width:80%;}
+                
+
+            }
+
+            .cat-tasks {
+                height: 80%;
+                display: flex;
+                flex-direction: column;
+                border: 5px solid black;
+                border-radius: 2px;
+
+
+                .cat-task {
+                    height: 40%;
+                    display: flex;
+                    flex-direction: row;
+                    border: 5px solid black;
+                    border-radius: 2px;
+
+                    .task-name {
+                        width: 20%;
+                    }
+
+                    .task-info {
+                        width: 80%;
+                    }
+
+                }
+
+            }
+        }
+    }
+}
