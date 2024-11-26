@@ -157,7 +157,6 @@ class TaskCategory(db.Model):
     name = db.Column(db.Text, nullable=False)
     tasks = db.relationship('Task', backref='task_categories', lazy=True)
 
-
 class Routine(db.Model):
     __tablename__ = 'routines'
     id = db.Column(db.Integer, primary_key=True)
@@ -512,7 +511,71 @@ def routine_form_handling(cats):
         db.session.commit()
     
     return redirect(url_for('routine', week_id = 0))
+
+def routine_make_recs(week):
+    tasks = Task.query.all()
+    task_records = TaskRecord.query.all()
+    cats = TaskCategory.query.all()
+
+    for task in tasks:
+        for date in week.dates:
+            rec = (
+                db.session.query(TaskRecord, Task, Date)
+                .join(Task, TaskRecord.task_id == Task.id)
+                .join(Date, TaskRecord.date_id == Date.id)
+                .filter(Task.id == task.id, Date.id == date.id)
+                .first()
+            )
+
+            if not rec:
+                new_rec = TaskRecord(task_id = task.id, date_id = date.id, comp = False)
+                db.session.add(new_rec)
+
+            rec = None
+    db.session.commit()
+
+def day_calc_comp(date, tasks):
+    tot = 0
+    done = 0
+    for task in tasks:
+        tot += 1
+        task_record = TaskRecord.query.filter_by(task_id=task.id, date_id=date.id).first()
+        if task_record.comp == True:
+            done += 1
     
+    if tot!=0:
+        comp = round(round(done/tot, 2) * 100)
+    else:
+        comp = 0
+    return comp
+
+def routine_calc_comp(week, tasks):
+    
+    comps = []
+    for date in week.dates:
+        tot = 0
+        done = 0
+        for task in tasks:
+            tot += 1
+            task_record = TaskRecord.query.filter_by(task_id=task.id, date_id=date.id).first()
+            if task_record.comp == True:
+                done += 1
+
+        if tot!= 0:
+            comp = round(round(done/tot, 2) * 100)
+        else:
+            comp = 0
+        comps.append( (date, comp) )
+    return comps
+
+def find_week_from_date(week_id, date_id):
+    date = Date.query.get(date_id)
+    if date:
+        return date.week_id
+    else:
+        return None
+
+        
 
 def load_routine(week_id):
     if week_id == 0:
@@ -527,6 +590,21 @@ def load_routine(week_id):
     task_records = TaskRecord.query.all()
     cats = TaskCategory.query.all()
 
+    start_date = week.dates[0]
+    end_date = week.dates[-1]
+
+    routine_make_recs(week)
+    comps = routine_calc_comp(week, tasks)
+
+    #continue here
+    recs = (
+    db.session.query(TaskRecord, Task, Date)
+    .join(Task, TaskRecord.task_id == Task.id)
+    .join(Date, TaskRecord.date_id == Date.id)
+    .filter(Date.date_form >= start_date.date_form, Date.date_form <= end_date.date_form)
+    .all()
+    )
+
     if request.method == "POST":
         return routine_form_handling(cats)
 
@@ -534,7 +612,7 @@ def load_routine(week_id):
     task_records = TaskRecord.query.all()
     cats = TaskCategory.query.all()
 
-    return render_template('routine_main.html', ts = tasks, week = week, trs = task_records, cats=cats)
+    return render_template('routine_main.html', ts = tasks, week = week, recs = recs, cats=cats, comps=comps)
 
 
 #BEFORE FIRST REQUEST FUNCTION
@@ -605,5 +683,53 @@ def update_todo_checkbox():
 @app.route('/routine/<int:week_id>', methods=('GET', 'POST'))
 def routine(week_id):
     return load_routine(week_id=week_id)
+
+#todo checkbox ajax
+@app.route('/update-task-checkbox', methods=["POST"])
+def update_task_checkbox():
+
+    data=request.get_json()
+    task_id = data['task_id']
+    date_id = data['date_id']
+    is_checked = data['checked']
+
+    date = Date.query.get(date_id)
+
+    tasks = Task.query.all()
+    
+    
+
+    task_record = TaskRecord.query.filter_by(task_id=task_id, date_id=date_id).first()
+    if task_record:
+
+        task_record.comp = is_checked
+        db.session.commit()
+        comp = day_calc_comp(date, tasks)
+
+        return jsonify({
+            "success": True,
+            "todo_id": task_id, 
+            "checked": is_checked,
+            "comp": comp}), 200
+    else:
+        return jsonify({
+            'success': False,
+            'message': 'Todo not found'
+        }), 404
+
+
+#delete task
+@app.route('/delete-task', methods=['POST'])
+def delete_task():
+    task_id = request.json.get('task_id')
+    task = Task.query.get(task_id)
+
+    if task:
+        TaskRecord.query.filter_by(task_id=task_id).delete()
+        db.session.delete(task)
+        db.session.commit()
+        return jsonify({"success":True, "message": f"Task {task_id} deleted."})
+    else:
+        return jsonify({"success": False, "message": "Task not found."}), 404
 
 

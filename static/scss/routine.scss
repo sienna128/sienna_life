@@ -1,5 +1,8 @@
 @import 'colors';
 
+* {box-sizing: border-box; flex: 0 0 auto;}
+
+
 .content {
     display:flex;
     flex-direction:column;
@@ -9,22 +12,31 @@
     height:5%;
 }
 
+//---------------------ADD SECTION----------------------------------
+
 .add-section {
     height:10%;
     display: flex;
     flex-direction: row;
 
-    border: 5px solid $blue3;
-    border-radius: 3px;
-
     .cat-sec {
         width: 30%;
-        border: 3px solid $blue2;
-        border-radius: 2px;
 
         .cat-name-con {
             display:flex;
             flex-direction:row;
+            border: 5px solid $mint17;
+            border-radius: 2px;
+
+            .cat-btn-con {
+                width: 40%;
+                .cat-btn{background-color: $teal3;}
+            }
+
+            .name-inp {
+                background-color: $teal6;
+                width: 60%;
+            }
         }
     }
 
@@ -33,19 +45,20 @@
         display: flex;
         flex-direction: row;
 
-        border: 3px solid $blue1;
+        border: 5px solid $seagreen10;
         border-radius: 2px;
 
         .add-task-form {
             display: flex;
             flex-direction: row;
 
-            .form-label {width: 30%; display:flex;}
-            .form-input {width: 40%; display:flex;}
-            .add-cat {
-                width: 30%;
-                display: flex;
-            }
+            .add-label{width:20%;}
+            .form-btn {background-color: $seagreen3; justify-content: center; align-items: center;}
+
+            .form-name {width: 20%; background-color: $seagreen19;}
+            .form-desc {width: 30%; background-color: $seagreen17;}
+            .add-cat {width: 30%;}
+            .dropdown {background-color: $seagreen9;}
 
         }
 
@@ -53,28 +66,39 @@
 
 }
 
+// --------------------DISPLAY SECTION-------------------------
 
 .display {
     height: 85%;
     display: flex;
     flex-direction: column;
+    border: 10px solid $mint7;
+    border-radius: 5px;
 
     .display-header {
         height: 10%;
         display: flex;
         flex-direction:row;
 
-        .blank {width: 20%;}
+        .blank {width: 20%; border:5px solid black;}
         .dates-header {
-            width: 80%;
+            width: calc(80% - 20px);
             display: flex;
             flex-direction: row;
 
-            border: 5px solid $blue3;
-            border-radius: 2px;
+            
             
             .date {
                 width: 10%;
+                border: 5px solid black;
+                border-radius: 2px;
+                margin-left: 10px;
+
+            }
+
+            .scroll-blank {
+                width:20px;
+                float:right;
             }
 
         }
@@ -85,54 +109,122 @@
         height: 90%;
         display: flex;
         flex-direction: column;
+        
 
-        .cat-con {
-            height: 40%;
+        .comp-con {
+            height: 10%;
             display: flex;
-            flex-direction: column;
-            border: 5px solid black;
-            border-radius: 2px;
+            flex-direction: row; 
+    
+            .blank {
+                width: 20%;
+            }
 
-            .cat-title {
-                height: 20%;
+            
+
+            .comps {
+                width: calc(80% - 20px);
                 display: flex;
                 flex-direction: row;
 
-                .cat-title-text {
-                    width: 20%;
-                }
-
-                .cat-title-blank{width:80%;}
-                
-
-            }
-
-            .cat-tasks {
-                height: 80%;
-                display: flex;
-                flex-direction: column;
-                border: 5px solid black;
-                border-radius: 2px;
-
-
-                .cat-task {
-                    height: 40%;
+                .comp {
+                    width: 10%;
                     display: flex;
                     flex-direction: row;
-                    border: 5px solid black;
-                    border-radius: 2px;
 
-                    .task-name {
-                        width: 20%;
-                    }
+                    border: 5px solid $green11;
+                    border-radius: 3px;
 
-                    .task-info {
-                        width: 80%;
+                    margin-left: 10px;
+
+                    .comp-number {width: 55%; }
+                    .percent {width: 45%; text-align: left;}
+
+                    
+                }
+                .scroll-blank {
+                    width:20px;
+                    float:right;
+                }
+                
+            }
+            
+        }
+
+        .cats-con {
+            height: 90%;
+            display: flex;
+            flex-direction: column;
+            overflow-y: scroll;
+            
+        
+
+            .cat-con {
+                height: calc(100%/2);
+                display: flex;
+                flex-direction: column;
+                border: 5px solid $teal11;
+                border-radius: 2px;
+
+                .cat-title {
+                    height: 7.5%;
+                    display: flex;
+                    flex-direction: row;
+                    text-align: left;
+                    .cat-title-text {text-align: left;}
+                }
+
+                .cat-tasks {
+                    height: 92.5%;
+                    display: flex;
+                    flex-direction: column;
+                    
+                    .cat-task {
+                        height: calc(100%/3);
+                        display: flex;
+                        flex-direction: row;
+                        
+
+                        .task-name-con {
+                            width: 20%;
+                            
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                        
+
+                            .delete-btn {
+                                width: 20%;
+                                align-items: center;
+                            }
+                            .task-name {width: 80%;}
+                        }
+
+                        .task-info {
+                            width: 80%;
+                            display: flex;
+                            flex-direction: row;
+
+                            .task-date {
+                                width: 10%;
+
+                                border: 5px solid $seagreen10;
+                                border-radius: 2px;
+
+                                margin-left: 10px;
+                            }
+                        }
+
                     }
 
                 }
-
             }
         }
     }
 }
+
+.point {cursor: pointer;}
+
+.cats-con::-webkit-scrollbar { width: 20px; }
+.cats-con::-webkit-scrollbar-track { background: $mint12; }
+.cats-con::-webkit-scrollbar-thumb { background: $blue10; border-radius: 15px; }
