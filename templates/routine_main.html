@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% block css %} <link rel="stylesheet" type="text/css" href="../static/css/routine.css" /> {% endblock %}
+
+<div class="content">
+    <h2 class="header">{% block title %} Daily Routine Home Page {% endblock %}</h2>
+
+    <div class="add-section">
+
+        <div class="cat-sec">
+            <form class="add-cat-form" name="cat-form" method="post">
+                <input type="hidden" name="form_id" value="cat-add"> </input>
+                <div class="new-cat-con">
+                    <!-- category name input -->
+                    <div class="cat-name-con">
+                        <div class="cat-btn-con"><button class="cat-btn" type="submit" for="cat-name-input"> New Category Name </button></div>
+                        <input class="name-inp" id="new-cat-input" name="new-cat-input" type="text" 
+                        placeholder="Category Name"> </input>
+                    </div>   
+                </div>
+
+            </form>
+        </div>
+
+        <div class="task-sec">
+            <form class="add-task-form" name="new-task-form" method="post">
+                <input type="hidden" name="form_id" value="task-add"> </input>
+                <div class="add-label"> <button class = "form-btn point" type="submit" id="new-task-btn">  Add New Task  </button> </div>
+                <input class="form form-input form-name" name="task-name" type="text" placeholder="Task Name"> </input>
+                <input class="form form-input form-desc" name="task-desc" type="text" placeholder="Task Description"> </input>
+                
+                <div class="add-cat">
+                    <select  name="add-cat-select" class="dropdown" required>
+                        <option value="" disabled selected> Select a category </option>
+                        {% for cat in cats %}
+                            <option value="{{cat.name}}"> {{cat.name}} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            
+            </form>
+        </div>
+    </div>
+
+    <div class="display">
+
+        <div class="display-header">
+            <div class="blank"> blank </div>
+            <div class="dates-header">
+                {% for date in week.dates %}
+                    <div class="date">
+                        <h2 class="date-str"> {{ date.date }}</h2>
+                    </div>
+                {% endfor %}
+                <div class="scroll-blank">
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="tasks-display">
+
+            <div class="comp-con">
+                <div class="blank">
+                    blank
+                </div>
+
+                <div class="comps">
+                    {% for date in week.dates %}
+                        <div class="comp">
+                            {% for d, comp in comps %}
+                                {% if d.date == date.date %}
+                                    <h4 class="comp-number" id="comp-{{date.id}}">
+                                    {{ comp }}
+                                    </h4>
+                                    <div class="percent"> % </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <div class="scroll-blank">
+                        
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="cats-con">
+                {% for cat in cats %}
+                    <div class="cat-con">
+
+
+                        <div class="cat-title">
+                            <p class="cat-title-text"> {{ cat.name }} </p>
+                        </div>
+
+                        <div class="cat-tasks">
+                            {% for task in cat.tasks %}
+                                <div class="cat-task">
+                                    <div class="task-name-con">
+                                        <p class="delete-btn delete-btn-{{task.id}} point" task-id="{{task.id}}">
+                                            X
+                                        </p>
+                                        <p class="task-name"> {{task.name}} </p>
+                                    </div>
+                                    <div class="task-info">
+                                        {% for date in week.dates %}
+                                            <div class="task-date">
+                                                {% for rec, t, d in recs %}
+                                                    {% if task.id == t.id and date.id == d.id %}
+                                                        
+                                                        <div class = "task-date-con" id = "task-date-con-{{task.id}}-{{date.id}}">
+                                                            <img src="{{ url_for('static', filename='images/' + ('teal_checkmark.png' if rec.comp else 'teal_uncheckmark.png')) }}" alt="teal_checkmark" id="checkbox-img-{{ task.id }}-{{date.id}}">
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                {% endfor %}
+
+            </div>    
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js_end %} <script type="text/javascript" src="{{ url_for('static', filename='js/routine.js') }}"> </script> {% endblock %}
