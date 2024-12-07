@@ -1,0 +1,160 @@
+* {
+  flex-shrink: 0;
+  flex-grow: 0; }
+
+.content {
+  display: flex;
+  flex-direction: column; }
+  .content .add {
+    height: 10%;
+    display: flex;
+    flex-direction: row; }
+    .content .add .cat-form {
+      width: 50%; }
+      .content .add .cat-form .add-cat {
+        display: flex;
+        flex-direction: column;
+        border: 5px solid teal; }
+        .content .add .cat-form .add-cat .cat-btn-con {
+          height: 40%; }
+          .content .add .cat-form .add-cat .cat-btn-con .cat-btn-submit {
+            background-color: seagreen; }
+        .content .add .cat-form .add-cat .cat-info {
+          height: 60%;
+          display: flex;
+          flex-direction: row; }
+          .content .add .cat-form .add-cat .cat-info .cat-info-sub {
+            width: 50%;
+            color: white; }
+          .content .add .cat-form .add-cat .cat-info .cat-info-input {
+            background-color: darkcyan;
+            color: white; }
+          .content .add .cat-form .add-cat .cat-info .cat-info-input::placeholder {
+            color: white; }
+    .content .add .add-other {
+      width: 50%; }
+  .content .display {
+    height: 90%;
+    display: flex;
+    flex-direction: column; }
+    .content .display .header {
+      display: flex;
+      flex-direction: row;
+      height: 10%; }
+      .content .display .header .blank {
+        width: 5%; }
+      .content .display .header .dates {
+        display: flex;
+        flex-direction: row;
+        width: 95%; }
+        .content .display .header .dates .date {
+          width: 14%;
+          border: solid 5px #50dccc;
+          border-radius: 2px; }
+      .content .display .header .scroll-blank {
+        width: 20px; }
+    .content .display .info {
+      display: flex;
+      flex-direction: row;
+      height: 90%;
+      overflow-y: scroll;
+      cursor: pointer; }
+      .content .display .info .times {
+        width: 5%;
+        display: flex;
+        flex-direction: column; }
+        .content .display .info .times .time-con {
+          height: 5%;
+          display: flex;
+          flex-direction: column; }
+          .content .display .info .times .time-con .time, .content .display .info .times .time-con .time-bottom {
+            height: 50%;
+            font-size: 80%;
+            text-align: right; }
+      .content .display .info .events {
+        width: 95%;
+        display: flex;
+        flex-direction: row; }
+        .content .display .info .events .date-info {
+          width: 14%;
+          display: flex;
+          flex-direction: column; }
+          .content .display .info .events .date-info .date-slot {
+            height: 5%;
+            border: 4px solid #00bfbf;
+            border-radius: 2px;
+            background-color: aquamarine; }
+          .content .display .info .events .date-info .event-slot {
+            height: 5%;
+            border: 4px solid #00bfbf;
+            border-radius: 2px;
+            background-color: palegreen; }
+
+.info::-webkit-scrollbar {
+  width: 20px; }
+
+.info::-webkit-scrollbar-track {
+  background: #98f098; }
+
+.info::-webkit-scrollbar-thumb {
+  background: powderblue;
+  border-radius: 15px; }
+
+.date-slot {
+  -webkit-user-drag: none;
+  user-select: none; }
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000; }
+  .modal .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 50%;
+    width: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column; }
+    .modal .modal-content .close-button {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      position: absolute;
+      display: flex;
+      height: 5%;
+      width: 5%;
+      float: right; }
+    .modal .modal-content .header {
+      height: 10%; }
+    .modal .modal-content .event-form {
+      height: 85%;
+      display: flex;
+      flex-direction: column; }
+      .modal .modal-content .event-form .cat-con {
+        margin-top: 5%; }
+      .modal .modal-content .event-form .info-con {
+        height: 15%;
+        display: flex;
+        flex-direction: row; }
+        .modal .modal-content .event-form .info-con input, .modal .modal-content .event-form .info-con select {
+          border: black solid 5px;
+          border-radius: 2px;
+          width: 50%; }
+        .modal .modal-content .event-form .info-con label {
+          width: 50%; }
+      .modal .modal-content .event-form .save-event-button {
+        height: 15%;
+        border: black solid 5px;
+        border-radius: 2px; }

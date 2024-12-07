@@ -5,11 +5,14 @@ import sqlite3
 from flask import Flask, render_template, request, url_for, flash, redirect, jsonify
 from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import abort
+import json
 import prep as p
 import datetime
-from datetime import date
+from datetime import time as time_dt
+from datetime import date as date_dt
 from collections import defaultdict
 
 #set up Flask and SQL
@@ -17,6 +20,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = '3.1415926535'
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Set up Flask-Assets
 assets = Environment(app)
@@ -52,12 +56,19 @@ scss_bundle_routine = Bundle(
     output='css/routine.css'  # Compiled CSS output for workout.html
 )
 
+scss_bundle_calendar = Bundle(
+    'scss/calendar.scss',
+    filters='libsass',
+    output='css/calendar.css'  # Compiled CSS output for workout.html
+)
+
 # Register each bundle with a unique name
 assets.register('base_css', scss_bundle_base)
 assets.register('todo_main_css', scss_bundle_todo_main)
 assets.register('add_todo_css', scss_bundle_add_todo)
 assets.register('workout_css', scss_bundle_workout)
 assets.register('routine_css', scss_bundle_routine)
+assets.register('calendar_css', scss_bundle_calendar)
 
 
 #-------------SQL table class variables---------------------------
@@ -163,7 +174,167 @@ class Routine(db.Model):
     name = db.Column(db.Text, nullable=False)
 
 
+#calendar stuff
+
+class Event(db.Model):
+    __tablename__ = 'events'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
+
+    cat_id = db.Column(db.Integer, db.ForeignKey('event_categories.id'), nullable=False)
+    cat_name = db.Column(db.Text)
+
+    
+    time_range = db.relationship('TimeRange', back_populates='event', uselist=False)
+
+    color = db.Column(db.Text)
+
+class EventCategory(db.Model):
+    __tablename__ = 'event_categories'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
+    color = db.Column(db.Text)
+
+    events = db.relationship('Event', backref='event_categories', lazy=True)
+
+class TimeRangeTimeSlotIntermediary(db.Model):
+    __tablename__ = 'timerange_timeslot_intermediary'
+    
+    time_range_id = db.Column(db.Integer, db.ForeignKey('time_ranges.id'), primary_key=True)
+    time_slot_id = db.Column(db.Integer, db.ForeignKey('time_slots.id'), primary_key=True)
+
+
+class TimeRange(db.Model):
+    __tablename__ = 'time_ranges'
+    id = db.Column(db.Integer, primary_key=True)
+    start = db.Column(db.Time, nullable=False)
+    end = db.Column(db.Time, nullable=False)
+    start_str = db.Column(db.Text)
+    end_str = db.Column(db.Text)
+
+    overnight = db.Column(db.Boolean, default=False)
+    date_id = db.Column(db.Integer, db.ForeignKey('dates.id'), nullable=False)
+    date_id2 = db.Column(db.Integer, db.ForeignKey('dates.id'))
+
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
+    event = db.relationship('Event', back_populates='time_range')
+
+    time_slots = db.relationship('TimeSlot', secondary='timerange_timeslot_intermediary', back_populates='time_ranges')
+    #num_slots = db.Column(db.Integer, nullable=False)
+
+class TimeSlot(db.Model):
+    __tablename__ = 'time_slots'
+    id = db.Column(db.Integer, primary_key=True)
+    start = db.Column(db.Time, nullable=False)
+    end = db.Column(db.Time, nullable=False)
+    time = db.Column(db.Text, nullable=False)
+    time_end = db.Column(db.Text, nullable=False)
+
+    time_ranges = db.relationship('TimeRange', secondary='timerange_timeslot_intermediary', back_populates='time_slots')
+
+
+class Color(db.Model):
+    __tablename__ = 'colors'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
+
+    cat_id = db.Column(db.Integer, db.ForeignKey("event_categories.id"), nullable=False)
+
+
+
+
+
+
 #--------------------- PREPARATION -----------------------------------------
+
+# Export data to JSON file
+def export_data(file_name="db_date.json"):
+    data = {}
+
+    # Query all records for each model and convert to dict format
+    for model in [ToDo, Category, Exercise, Workout, Date, Week, Task, TaskRecord, TaskCategory, Routine, Event, EventCategory, TimeRange, TimeSlot, Color]:
+        table_name = model.__tablename__
+        records = db.session.query(model).all()
+        data[table_name] = [record_to_dict(record) for record in records]
+
+    # Write data to file
+    with open(file_name, "w") as file:
+        json.dump(data, file, default=str, indent=4)  # Use default=str to serialize non-serializable objects like dates
+    print(f"Data exported to {file_name}")
+
+# Helper function to convert a record to a dictionary
+def record_to_dict(record):
+    record_dict = {}
+    for column in record.__table__.columns:
+        
+        column_name = column.name
+        value = getattr(record, column_name)
+        record_dict[column_name] = value
+    return record_dict
+
+from datetime import datetime
+
+def import_data(file_name="db_12_3.json"):
+    with open(file_name, "r") as file:
+        data = json.load(file)
+
+    # Add data back into the database
+    with app.app_context():
+        for table_name, records in data.items():
+            # Get the model class based on table_name
+            model_class = get_model_class(table_name)
+            if model_class:
+                for record in records:
+                    # Convert date and time strings to the correct data types
+                    for column, value in record.items():
+                        column_type = model_class.__table__.columns.get(column).type
+
+                        # Check for DATE type and convert
+                        if isinstance(column_type, db.Date):
+                            try:
+                                record[column] = datetime.strptime(value, '%Y-%m-%d').date() if isinstance(value, str) else value
+                            except ValueError:
+                                print(f"Invalid date format for {column}: {value}")
+
+                        # Check for TIME type and convert
+                        elif isinstance(column_type, db.Time):
+                            try:
+                                record[column] = datetime.strptime(value, '%H:%M:%S').time() if isinstance(value, str) else value
+                            except ValueError:
+                                print(f"Invalid time format for {column}: {value}")
+                    
+                    # Create the object and add to the session
+                    obj = model_class(**record)
+                    db.session.add(obj)
+        db.session.commit()
+    print("Data imported successfully!")
+
+
+# Helper function to get the model class based on table name
+def get_model_class(table_name):
+    models = {
+        'todos': ToDo,
+        'categories': Category,
+        'exercises': Exercise,
+        'workouts': Workout,
+        'dates': Date,
+        'weeks': Week,
+        'tasks': Task,
+        'task_records': TaskRecord,
+        'task_categories': TaskCategory,
+        'routines': Routine,
+        'events': Event,
+        'event_categories': EventCategory,
+        'time_ranges': TimeRange,
+        'time_slots': TimeSlot,
+        'colors': Color
+    }
+    return models.get(table_name)
+
+
+
+
+
 
 #global variables
 class Now():
@@ -172,20 +343,15 @@ class Now():
 
 now = Now()
 
-def calc_cur_week():
-    with app.app_context():
-        #print(p.today_str)
-        cur_date = Date.query.filter_by(date=p.today_str).first()
-        cur_week = Week.query.options(joinedload(Week.dates)).filter_by(id=cur_date.week_id).first()
-        return cur_date, cur_week
+
     
-calc_cur_week()
+
     
 def date_str_to_form(ds):
     dss = ds.split("/")
     dm = int(dss[0])
     dd = int(dss[1])
-    df = date(2024, dm, dd)
+    df = date_dt(2024, dm, dd)
     return df
 
 
@@ -209,7 +375,7 @@ def create_weeks_from_oct():
                 dm = int(dss[0])
                 dd = int(dss[1])
                 #print(dm, dd)
-                df = date(2024, dm, dd)
+                df = date_dt(2024, dm, dd)
                 cd = Date(date=ds, date_form=df, week_id = week_new.id)
                 dates.append(cd)
                 ci += 1
@@ -219,7 +385,14 @@ def create_weeks_from_oct():
             db.session.add_all(dates)
             db.session.commit()
 
-
+def calc_cur_week():
+    with app.app_context():
+        #create_weeks_from_oct()
+        print("\n\n\n", p.today_str, len(Date.query.all()))
+        cur_date = Date.query.filter_by(date=p.today_str).first()
+        cur_week = Week.query.options(joinedload(Week.dates)).filter_by(id=cur_date.week_id).first()
+        return cur_date, cur_week
+    
 #old create tables for exercises
 #DO NOT USE WILL DELETE DATA
 def create_tables_ex_old():
@@ -575,8 +748,6 @@ def find_week_from_date(week_id, date_id):
     else:
         return None
 
-        
-
 def load_routine(week_id):
     if week_id == 0:
         week = now.cur_week
@@ -614,21 +785,197 @@ def load_routine(week_id):
 
     return render_template('routine_main.html', ts = tasks, week = week, recs = recs, cats=cats, comps=comps)
 
+def generate_time_slots():
+    pass
+    slots = []
+    for i in range(24):
+        for j in range(4):
+            hour = i
+            min = j * 15
+            if min == 45:
+                min_end = 0
+            else:
+                min_end = min + 15
+            time = time_dt(hour, min)
+            time_end = time_dt(hour, min_end)
+            if len(str(min)) == 2:
+                time_str = str(hour) + ":" + str(min)
+            else:
+                time_str = str(hour) + ":0" + str(min)
+
+            if len(str(min_end)) == 2:
+                time_stre = str(hour) + ":" + str(min_end)
+            else:
+                time_stre = str(hour) + ":0" + str(min_end)
+            new_slot = TimeSlot(start=time, end=time_end, time=time_str, time_end=time_stre)
+            slots.append(new_slot)
+    
+    db.session.add_all(slots)
+    db.session.commit()
+
+def generate_colors():
+    pass
+
+def get_time_slots(start, end):
+    s = start.split(":")
+    print("s", start, s)
+    sh = int(s[0])
+    sm = int(s[1])
+    e = end.split(":")
+    eh = int(e[0])
+    em = int(e[1])
+
+    ch = sh
+    cm = sm
+
+    slots = [TimeSlot.query.filter(TimeSlot.time == start).first()]
+
+    if eh > sh or (eh == sh and em > sm):
+        cont = True
+    else:
+        print("start time is after end time")
+        slots = []
+        cont = False
+
+    while cont:
+        if cm + 15 == 60:
+            cm = 0
+            ch += 1
+        else:
+            cm += 15
+
+        if ch == eh and cm == em:
+            cont = False
+        else:
+            if len(str(cm)) == 1:
+                time_str = str(ch) + ":0" + str(cm)
+            else:
+                time_str = str(ch) + ":" + str(cm)
+
+            ts = TimeSlot.query.filter(TimeSlot.time == time_str).first()
+            slots.append(ts)
+    return slots
+
+def time_conv(time_str):
+    ts = time_str.split(":")
+    h = int(ts[0])
+    m = int(ts[1])
+    return time_dt(h, m)
+
+def calendar_form_handling():
+    form_id = request.form["form_id"]
+    print("\n\nform", form_id)
+
+    if form_id == "cat-add":
+        name = request.form["cat-event-input"]
+        color = "teal"
+        new_cat = EventCategory(name=name, color=color)
+        db.session.add(new_cat)
+        db.session.commit()
+    elif form_id == "event-form":
+        cat_name = request.form["event-cat"]
+        name = request.form["event-title"]
+        start = request.form["event-start"]
+        end = request.form["event-end"]
+        date_str = request.form["event-date"]
+
+        print("\n\n\ncat name", cat_name)
+        cat = EventCategory.query.filter_by(name = cat_name).first()
+        date = Date.query.filter(Date.date == date_str).first()
+
+        slots = get_time_slots(start, end)
+
+        ev_tr = TimeRange(start=time_conv(start), end=time_conv(end), start_str=start, end_str=end, date_id=date.id, time_slots=slots,  event_id = 0)
+        new_event = Event(name=name, cat_id=cat.id, cat_name=cat_name, time_range=ev_tr, color=cat.color)
+        ev_tr.event_id = new_event.id
+
+        db.session.add_all([ev_tr, new_event])
+        db.session.commit()
+
+        print("\n\n\nhere")
+        for ts in new_event.time_range.time_slots:
+            print(ts.time)
+
+    return redirect(url_for('calendar', week_id=0))
+
+def load_calendar(week_id):
+    if week_id == 0:
+        week = now.cur_week
+        week_id = week.id
+    else:
+        week = Week.query.filter(Week.id == week_id).first()
+
+    timeslots = TimeSlot.query.all()
+    #timeslots = []
+    event_cats = EventCategory.query.all()
+    events = Event.query.all()
+    
+    if request.method == "POST":
+        return calendar_form_handling()
+
+    return render_template('calendar_main.html', week=week, timeslots=timeslots, event_cats=event_cats, events=events)
 
 #BEFORE FIRST REQUEST FUNCTION
 @app.before_request
 def initialize_app():
-    #print("init")
+    print("\n\n\n\n\ninit")
     app.before_request_funcs[None].remove(initialize_app)
+
+    #deleting stuff
     #clear_table(ToDo)
     #clear_table(Category)
     #clear_table(Task)
     #clear_table(TaskCategory)
     #reset_db()
-    create_weeks_from_oct()
+
+    #prep for workout and all
+    #create_weeks_from_oct()
+
+    #prep for calendar
+    #generate_time_slots()
+
     cur_date, cur_week = calc_cur_week()
     now.cur_date = cur_date
     now.cur_week = cur_week
+    #print(now.cur_week)
+
+def ce():
+    clear_table(Event)
+    clear_table(TimeRange)
+    clear_table(TimeRangeTimeSlotIntermediary)
+
+def initial():
+    print("\n\n\n\n\ninit")
+
+    #db.create_all()
+
+    #deleting stuff
+    #clear_table(ToDo)
+    #clear_table(Category)
+    #clear_table(Task)
+    #clear_table(TaskCategory)
+    #clear_table(Exercise)
+    #clear_table(TimeSlot)
+    #clear_table(EventCategory)
+    #ce()
+    #reset_db()
+    #db.create_all()
+
+    #import_data()
+
+    #prep for workout and all
+    #create_weeks_from_oct()
+
+    #prep for calendar
+    #generate_time_slots()
+
+    #data transfer
+    #export_data()
+
+    cur_date, cur_week = calc_cur_week()
+    now.cur_date = cur_date
+    now.cur_week = cur_week
+    print(now.cur_week)
 
 #---------------------PAGES-----------------------------------
 
@@ -636,6 +983,7 @@ def initialize_app():
 @app.route('/')
 def index():
     todos = ToDo.query.all()
+    initial()
     return render_template('main.html', todos=todos)
 
 #workout page
@@ -733,3 +1081,19 @@ def delete_task():
         return jsonify({"success": False, "message": "Task not found."}), 404
 
 
+#calendar page
+@app.route('/calendar/<int:week_id>', methods=('GET', 'POST'))
+def calendar(week_id):
+    return load_calendar(week_id=week_id)
+
+#save events on calendar
+@app.route("/save_event", methods=["POST"])
+def save_event():
+    data = request.get_json()
+    date = data.get("date")
+    start = data.get("start")
+    end = data.get("end")
+
+    print("\n\n\n", date, start, end)
+
+    return jsonify({"message": "Event saved!", "data": data})
