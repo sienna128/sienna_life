@@ -1,0 +1,212 @@
+@import 'colors';
+
+* {
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+
+    .add {
+        height: 10%;
+        display: flex;
+        flex-direction: row;
+
+        .cat-form {
+            width: 50%;
+           
+            .add-cat {
+                display: flex;
+                flex-direction: column;
+                border: 5px solid $seagreen4;
+
+                .cat-btn-con {
+                    height:40%;
+                    .cat-btn-submit{background-color: $mint7;}}
+
+                .cat-info {
+                    height: 60%;
+
+                    display: flex;
+                    flex-direction: row;
+
+                    .cat-info-sub {
+                        width: 50%;
+                        color: white;
+                    }
+
+                    .cat-info-input {background-color: $teal2; color: white;}
+                    .cat-info-input::placeholder{color:white;}
+                }
+            }
+        }
+
+        .add-other {
+            width: 50%;
+        }
+    }
+
+    .display { 
+        height: 90%;
+        display: flex;
+        flex-direction: column;
+
+        .header {
+            display: flex;
+            flex-direction: row;
+            height: 10%;
+
+            .blank {width: 5%;}
+
+            .dates {
+                display: flex;
+                flex-direction: row;
+                width: 95%;
+
+                .date {width: 14%; border: solid 5px $teal19; border-radius: 2px;}
+            }
+
+            .scroll-blank {width: 20px;}
+        }
+
+        .info {
+            display: flex;
+            flex-direction: row;
+            height: 90%;
+
+            overflow-y: scroll;
+
+            cursor: pointer;
+
+            .times {
+                width: 5%;
+                display: flex;
+                flex-direction: column;
+
+                .time-con {
+                    height: 5%;
+                    display: flex;
+                    flex-direction: column;
+
+                    .time, .time-bottom {height: 50%; font-size: 80%; text-align: right;}
+                }
+            }
+
+            .events {
+                width: 95%;
+                display: flex;
+                flex-direction: row;
+
+                .date-info {
+                    width: 14%;
+                    display: flex;
+                    flex-direction: column;
+
+                    .date-slot {
+                        height: 5%;
+                        border: 4px solid $teal5;
+                        border-radius: 2px;
+                        background-color: $seagreen6;
+                    }
+
+                    .event-slot {
+                        height: 5%;
+                        border: 4px solid $teal5;
+                        border-radius: 2px;
+                        background-color: $seagreen16;}
+                }
+            }
+
+        }
+    }
+
+}
+
+
+.info::-webkit-scrollbar { width: 20px; }
+.info::-webkit-scrollbar-track { background: $mint12; }
+.info::-webkit-scrollbar-thumb { background: $blue10; border-radius: 15px; }
+
+.date-slot {
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+
+        height: 50%;
+        width: 50%;
+
+        transform: translate(-50%, -50%);
+        
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+
+        display: flex;
+        flex-direction: column;
+
+        .close-button {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            position: absolute;
+            
+            display: flex;
+            height: 5%;
+            width: 5%;
+            float: right;
+            
+        }
+
+        .header {height: 10%;}
+
+        .event-form {
+            height: 85%;
+            display: flex;
+            flex-direction: column;
+
+            .cat-con {margin-top: 5%;}
+
+            .info-con {
+                height: 15%;
+
+                display: flex;
+                flex-direction: row;
+
+                input, select {
+                    border: black solid 5px;
+                    border-radius: 2px;
+                    width: 50%;
+                }
+
+                label {width: 50%;}
+            }
+
+            .save-event-button {
+                height: 15%;
+                border: black solid 5px;
+                border-radius: 2px;
+            }
+        }
+    }
+    
+}
+

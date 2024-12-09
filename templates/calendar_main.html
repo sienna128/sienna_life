@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% block css %} <link rel="stylesheet" type="text/css" href="../static/css/calendar.css" /> {% endblock %}
+
+<div class="content">
+
+    <!-- ADD section (recurring events) -->
+     <div class="add">
+        
+            <form class="cat-form" name="cat-event-form" method="POST">
+                
+                <input type="hidden" name="form_id" value="cat-add"> </input>
+                <div class="add-cat">
+                    <div class="cat-btn-con"> 
+                        <button class="cat-btn-submit" type="submit" for="cat-event-con"> Add New Category Name </button>
+                    </div>
+
+                    <div class="cat-info">
+                        <div class="name-con cat-info-sub">
+                            <input class="cat-info-input" id="cat-event-input" name="cat-event-input" type="text" placeholder="Category Name"> </input>
+                        </div>
+
+                        <div class="color-con cat-info-sub">
+                            <input class="cat-info-input" type="color" id="color-selector" name="color" value="#008877"> </input>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        
+
+        <div class="add-other">
+            Other
+        </div>
+     </div>
+
+    <!-- DISPLAY section (calendar week view) -->
+     <div class="display">
+
+        <div class="header">
+            <div class="blank">
+                blank
+            </div>
+
+            <div class="dates">
+                {% for date in week.dates %}
+                    <div class="date">
+                        {{date.date}}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="scroll-blank"> S </div>
+
+        </div>
+
+        <div class="info">
+            
+            <div class="times">
+                {% for time in timeslots %}
+                    <div class="time-con">
+                        <div class="time">
+                            {{time.time }}
+                        </div>
+                        <div class="time-bottom"></div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="events">
+                {% for date in week.dates %}
+                    <div class="date-info">
+                        {% set ns = namespace(found=False, i=1, slots=0, event=None) %}
+
+                        {% for slot in timeslots %}
+                            
+                            {% for e in events %}
+                                {% if e.time_range.start_str == slot.time and e.time_range.date_id == date.id %}
+                                    
+                                    {% set ns.event = e %}
+                                    {% set ns.slots = e.time_range.time_slots|length %}
+
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if ns.found == False and ns.i > ns.slots %}
+                                <div class="date-slot" data-time="{{slot.time}}" data-timeend="{{slot.time_end}}" data-date="{{date.date}}">
+                                    {{date.date}} {{slot.time}} 
+                                </div>
+                            {% else %}
+                                {% if ns.i == 1 %}
+                                    <div class="event-slot"> {{ns.event.name}} {{ns.event.time_range.start_str}} {{ns.event.time_range.end_str}} </div>
+                                {% else %}
+                                    <div class="event-slot">blank {{ns.i}} {{ns.slots}} </div>
+                                {% endif %}
+
+                                {% set ns.i = ns.i + 1 %}
+                                {% if ns.i > ns.slots %}
+                                    {% set ns.found = False %}
+                                    {% set ns.i = 1 %}
+                                    {% set ns.slots = 0 %}
+                                    {% set ns.event = None %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+     </div>
+
+
+</div>
+
+<div class="modal" id="event-modal">
+    <div class="modal-content">
+        <div class="close-button">&times;</div>
+        <div class="header"> Create New Event </div>
+        <form class="event-form" id="event-form" method="POST">
+            <input type="hidden" name="form_id" value="event-form"> </input>
+            <div class="cat-con info-con">
+                <label for="event-cat"> Event Category:</label>
+                <select id="event-cat-select" name="event-cat" class="dropdown" required>
+                    <option value="" disabled selected> Select a category </option>
+                    {% for cat in event_cats %}
+                        <option value="{{cat.name}}"">  {{cat.name}} </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="title-con info-con">
+                <label for="event-title">Event Title:</label>
+                <input type="text" id="event-title" name="event-title" required>
+            </div>
+
+            <div class="start-con info-con">
+                <label for="event-start">Start Time:</label>
+                <input type="text" id="event-start" name="event-start" readonly>
+            </div>    
+
+            <div class="end-con info-con">
+                <label for="event-end">End Time:</label>
+                <input type="text" id="event-end" name="event-end" readonly>
+            </div>
+
+            <div class="date-con info-con">
+                <label for="event-date">Date:</label>
+                <input type="text" id="event-date" name="event-date" readonly>
+            </div>
+                
+            <button type="submit" class="save-event-button">Save Event</button>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block js_end %} <script type="text/javascript" src="{{ url_for('static', filename='js/calendar.js') }}"> </script> {% endblock %}

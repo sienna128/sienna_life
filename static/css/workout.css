@@ -131,7 +131,18 @@ button {
 
 .exercises {
   display: flex;
-  flex-direction: column; }
+  flex-direction: column;
+  overflow-y: scroll; }
+
+.exercises::-webkit-scrollbar {
+  width: 15px; }
+
+.exercises::-webkit-scrollbar-track {
+  background: #54b89a; }
+
+.exercises::-webkit-scrollbar-thumb {
+  background: #269c7f;
+  border-radius: 15px; }
 
 .exercise-log {
   display: flex;
