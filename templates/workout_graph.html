@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% block css %} <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/workout_graph.css')}}" /> {% endblock %}
+    <div class="content">
+
+        <div class="menu">
+            <div class="menu-option"> Back to Main Workout Page </div>
+            <div class="menu-option"> Exercises </div>
+            <div class="menu-option"> Weight </div>
+        </div>
+
+        <div class="add">
+                <form class="weight-form" id="weight-form">
+                    <div class="weight-form-con">
+                        <label class="wform date-label" for="date">Date:</label>
+                        <input class="wform date-inp" type="text" id="date" name="date" required> </input>
+
+                        <label class="wform weight-label" for="weight"> Weight (lbs): </label> 
+                        <input class="wform weight-inp" type="number" id="weight" name="weight" step=""0.1
+                        required>
+                        <button class="wform" type="submit"> Add Weight </button>
+
+                    </div>
+                </form>
+        </div>
+
+        <div class="display">
+            <div class="test">
+                {% for weight in weights %}
+                    {{weight.weight}}
+                {% endfor %}    
+            </div>
+            <div class="graph" id="graph"> </div>
+
+        </div>
+
+    </div>
+
+    
+{% endblock %}
+
+{% block js_end %} 
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/workout_graph.js')}}"> </script> 
+{% endblock %}

@@ -57,8 +57,14 @@
             <div class="alert alert-danger">{{ message }}</div>
         {% endfor %}
 
+        <div class = "main">
         <!-- inherited content -->
         {% block content %} {% endblock %}
+        </div>
+
+        <div class="footer">
+            Blank
+        </div>
     </div>
 
     {% block js_end %} {% endblock %}

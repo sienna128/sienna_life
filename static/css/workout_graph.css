@@ -1,0 +1,34 @@
+.content {
+  display: flex;
+  flex-direction: column; }
+  .content .menu {
+    display: flex;
+    flex-direction: row;
+    height: 15%; }
+    .content .menu .menu-option {
+      width: 25%;
+      border: solid 5px #40f0d0; }
+  .content .add {
+    height: 10%; }
+    .content .add .weight-form {
+      border: solid 5px darkcyan;
+      border-radius: 2px; }
+      .content .add .weight-form .weight-form-con {
+        display: flex;
+        flex-direction: row; }
+        .content .add .weight-form .weight-form-con .wform {
+          width: 20%;
+          border: solid 5px seagreen;
+          border-radius: 2px; }
+  .content .display {
+    height: 75%;
+    border: solid 5px #0000cc;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column; }
+    .content .display .test {
+      height: 30%;
+      display: flex;
+      flex-direction: row; }
+    .content .display .graph {
+      height: 70%; }

@@ -37,7 +37,18 @@ input {
 
 /* base */
 body {
+  min-height: calc(100vh - 100px);
   overflow-y: hidden; }
+
+.container {
+  display: flex;
+  flex-direction: column; }
+
+.main {
+  height: 90%; }
+
+.footer {
+  height: 10%; }
 
 .bg-light {
   background-color: #66ffb2; }

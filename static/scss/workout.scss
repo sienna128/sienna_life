@@ -201,6 +201,9 @@ button {
     border: 5px solid black;
     border-radius: 2px;
 
+    overflow-x: hidden;
+    overflow-y: hidden;
+
     width: 20%;
 }
 

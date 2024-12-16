@@ -1,0 +1,58 @@
+@import 'colors';
+
+.content {
+    display: flex;
+    flex-direction: column;
+
+    .menu {
+        display: flex;
+        flex-direction: row;
+
+        height: 15%;
+
+        .menu-option {
+            width: 25%;
+            border: solid 5px $teal16;
+        }
+    }
+
+    .add {
+        height: 10%;
+        
+        .weight-form {
+            border: solid 5px $teal2;
+            border-radius: 2px;
+        
+            .weight-form-con {
+                display: flex;
+                flex-direction: row;
+
+                .wform {
+                    width: 20%;
+                    border: solid 5px $seagreen1;
+                    border-radius: 2px;
+                }
+            }
+        }
+    }
+
+    .display {
+        height: 75%;
+        border: solid 5px $blue2;
+        border-radius: 2px;
+
+        display: flex;
+        flex-direction: column;
+
+        .test {
+            height: 30%;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .graph {
+            height: 70%;
+            
+        }
+    }
+}

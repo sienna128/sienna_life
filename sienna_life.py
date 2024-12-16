@@ -9,6 +9,8 @@ from flask_migrate import Migrate
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import abort
 import json
+import plotly.graph_objects as go
+from plotly.utils import PlotlyJSONEncoder
 import prep as p
 import datetime
 from datetime import time as time_dt
@@ -62,6 +64,12 @@ scss_bundle_calendar = Bundle(
     output='css/calendar.css'  # Compiled CSS output for workout.html
 )
 
+scss_bundle_workout_graph = Bundle(
+    'scss/workout_graph.scss',
+    filters='libsass',
+    output='css/workout_graph.css'  # Compiled CSS output for workout.html
+)
+
 # Register each bundle with a unique name
 assets.register('base_css', scss_bundle_base)
 assets.register('todo_main_css', scss_bundle_todo_main)
@@ -69,6 +77,7 @@ assets.register('add_todo_css', scss_bundle_add_todo)
 assets.register('workout_css', scss_bundle_workout)
 assets.register('routine_css', scss_bundle_routine)
 assets.register('calendar_css', scss_bundle_calendar)
+assets.register('workout_graph_css', scss_bundle_workout_graph)
 
 
 #-------------SQL table class variables---------------------------
@@ -240,8 +249,20 @@ class Color(db.Model):
 
     cat_id = db.Column(db.Integer, db.ForeignKey("event_categories.id"), nullable=False)
 
+class Weight(db.Model):
+    __tablename__ = 'weights'
+    id = db.Column(db.Integer, primary_key=True)
+    weight = db.Column (db.Float, nullable=False)
 
+    date_id = db.Column(db.Integer, db.ForeignKey("dates.id"), nullable=False)
+    date = db.Column(db.Text, nullable=False)
 
+#study page
+
+class Subject(db.Model):
+    __tablename__ = "subjects"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
 
 
 
@@ -564,6 +585,12 @@ def load_workout(week_id):
         return redirect(url_for('workout', week_id = week.id))
     #return render_template('workout.html', wos = wos, week = now.cur_week)
     return render_template('workout.html', exs = exs, wos = wos, week = week, prev_week = prev_week, next_week = next_week)
+
+def load_workout_graph(week_id):
+    weights = Weight.query.all()
+    return render_template('workout_graph.html', weights=weights)
+
+
 
 def todo_form_handling(request, cats):
 
@@ -990,6 +1017,37 @@ def index():
 @app.route('/workout/<int:week_id>', methods=('GET', 'POST'))
 def workout(week_id):
     return load_workout(week_id=week_id)
+
+@app.route('/workout/graphs/<int:week_id>', methods=('GET', 'POST'))
+def workout_graph(week_id):
+    return load_workout_graph(week_id=week_id)
+
+@app.route('/add_weight', methods=["POST"])
+def add_weight():
+    date_str = request.form['date']
+    weight = float(request.form['weight'])
+
+    date = db.session.query(Date).filter(Date.date == date_str).first()
+    new_weight = Weight(weight=weight, date_id = date.id, date=date.date)
+    db.session.add(new_weight)
+    db.session.commit()
+
+    entries = Weight.query.order_by(Weight.date).all()
+
+    fig = go.Figure(data=[
+        go.Scatter(
+            x=[entry.date for entry in entries],
+            y=[entry.weight for entry in entries],
+            mode='markers+lines',
+            marker=dict(size=10, color="blue"),
+            hovertemplate='Date: %{x}<br>Weight: %{y} lbs<extra></extra>'
+        )
+    ])
+
+    fig.update_layout(title="Weight Tracker", xaxis_title="Date", yaxis_title="Weight (lbs)")
+
+    graph_json = json.dumps(fig, cls=PlotlyJSONEncoder)
+    return jsonify({'graph': graph_json})
 
 #todo page
 @app.route('/todo', methods=('GET', 'POST'))

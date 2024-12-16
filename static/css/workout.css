@@ -152,6 +152,8 @@ button {
   background-color: #1e9090;
   border: 5px solid black;
   border-radius: 2px;
+  overflow-x: hidden;
+  overflow-y: hidden;
   width: 20%; }
 
 .exercise-name-content {
