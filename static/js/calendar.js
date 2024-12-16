@@ -6,8 +6,6 @@ let activeEvent = null;
 const modal = document.getElementById("event-modal");
 const closeButton = document.querySelector(".close-button");
 
-
-
 eventsContainer.forEach((dateSlots) => {
 
     dateSlots.setAttribute("draggable", "false");
@@ -90,3 +88,21 @@ function openModal(start, end, date) {
     document.getElementById('event-end').value = end; 
     document.getElementById('event-date').value = date;
 }
+
+fetch('/get_events')
+    .then(response => response.json())
+    .then(events => {
+        const eventsContainer = document.querySelector('.events');
+
+        events.forEach(event => {
+            const eventString = event.start_time + "-" + event.date
+            console.log("Event String: ", eventString);
+            const eventElement = document.getElementById(eventString);
+            if (eventElement) {
+                eventElement.style.height = `${event.time_slots * 5}%`;
+            } else {
+                console.error("Event element not found: ", event, eventString);
+            }
+        });
+    })
+    

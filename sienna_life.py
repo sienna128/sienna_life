@@ -1155,3 +1155,19 @@ def save_event():
     print("\n\n\n", date, start, end)
 
     return jsonify({"message": "Event saved!", "data": data})
+
+#get events 
+@app.route('/get_events', methods=['POST', 'GET'])
+def get_events():
+    events = Event.query.all()
+    events_data = [
+        {
+            "name": event.name,
+            "start_time": event.time_range.start_str,
+            "end_time": event.time_range.end_str,
+            "date": event.time_range.date_id,
+            "time_slots": len(event.time_range.time_slots)
+        }
+        for event in events
+    ]
+    return jsonify(events_data)

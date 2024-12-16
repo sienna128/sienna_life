@@ -90,9 +90,7 @@
                                 </div>
                             {% else %}
                                 {% if ns.i == 1 %}
-                                    <div class="event-slot"> {{ns.event.name}} {{ns.event.time_range.start_str}} {{ns.event.time_range.end_str}} </div>
-                                {% else %}
-                                    <div class="event-slot">blank {{ns.i}} {{ns.slots}} </div>
+                                    <div class="event-con" id ="{{ns.event.time_range.start_str}}-{{ns.event.time_range.date_id}}"> {{ns.event.name}} {{ns.event.time_range.start_str}} {{ns.event.time_range.end_str}} </div>
                                 {% endif %}
 
                                 {% set ns.i = ns.i + 1 %}
