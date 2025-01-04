@@ -351,7 +351,7 @@ def get_model_class(table_name):
 
 
 
-
+#----------------DATE PREPARATION---------------------------
 
 #global variables
 class Now():
@@ -359,10 +359,6 @@ class Now():
     cur_week = None
 
 now = Now()
-
-
-    
-
     
 def date_str_to_form(ds):
     dss = ds.split("/")
@@ -370,7 +366,6 @@ def date_str_to_form(ds):
     dd = int(dss[1])
     df = date_dt(2024, dm, dd)
     return df
-
 
 #create weeks starting at oct
 def create_weeks_from_oct():
@@ -813,7 +808,6 @@ def load_routine(week_id):
     return render_template('routine_main.html', ts = tasks, week = week, recs = recs, cats=cats, comps=comps)
 
 def generate_time_slots():
-    pass
     slots = []
     for i in range(24):
         for j in range(4):
@@ -821,8 +815,10 @@ def generate_time_slots():
             min = j * 15
             if min == 45:
                 min_end = 0
+                hour_end = hour + 1
             else:
                 min_end = min + 15
+                hour_end = hour
             time = time_dt(hour, min)
             time_end = time_dt(hour, min_end)
             if len(str(min)) == 2:
@@ -831,9 +827,9 @@ def generate_time_slots():
                 time_str = str(hour) + ":0" + str(min)
 
             if len(str(min_end)) == 2:
-                time_stre = str(hour) + ":" + str(min_end)
+                time_stre = str(hour_end) + ":" + str(min_end)
             else:
-                time_stre = str(hour) + ":0" + str(min_end)
+                time_stre = str(hour_end) + ":0" + str(min_end)
             new_slot = TimeSlot(start=time, end=time_end, time=time_str, time_end=time_stre)
             slots.append(new_slot)
     
@@ -964,7 +960,7 @@ def initialize_app():
     #clear_table(Category)
     #clear_table(Task)
     #clear_table(TaskCategory)
-    reset_db()
+    #reset_db()
 
     #prep for workout and all
     create_weeks_from_oct()
@@ -995,6 +991,7 @@ def initial():
     #clear_table(Exercise)
     #clear_table(TimeSlot)
     #clear_table(EventCategory)
+    #clear_table(Event)
     #clear_table(Color)
     #ce()
     #reset_db()
@@ -1175,8 +1172,9 @@ def get_events():
     events_data = []
     for event in events:
         print("ec", event.cat_id)
-        cat = Category.query.filter_by(id = event.cat_id)
-        color = Color.query.filter_by(id = cat.color_id)
+        
+        cat = EventCategory.query.filter_by(id = event.cat_id).first()
+        color = Color.query.filter_by(id = cat.color_id).first()
         event_data = {
             "name": event.name,
             "start_time": event.time_range.start_str,
@@ -1188,4 +1186,5 @@ def get_events():
         }
         events_data.append(event_data)
 
+    print(jsonify(events_data))
     return jsonify(events_data)

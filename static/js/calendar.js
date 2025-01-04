@@ -17,6 +17,7 @@ eventsContainer.forEach((dateSlots) => {
         //console.log("mouse down", e.target)
         if (slot.classList.contains("date-slot")) {
             startSlot = slot;
+            console.log("down start", startSlot);
             startSlot.style.backgroundColor = "teal";
         }
     })
@@ -39,6 +40,8 @@ eventsContainer.forEach((dateSlots) => {
             isMouseDown = false;
             slot = e.target;
 
+            console.log("up start", startSlot);
+            console.log("up end slot", slot);
             start = startSlot.dataset.time;
             end = slot.dataset.timeend;
             date = startSlot.dataset.date;
@@ -82,8 +85,8 @@ closeButton.addEventListener("click", () => {
 function openModal(start, end, date) {
     modal.style.display = 'block';
 
-    console.log(start, end);
-    console.log(typeof(start));
+    console.log("open modal", start, end);
+    console.log("start type", typeof(start));
     document.getElementById('event-start').value = start;
     document.getElementById('event-end').value = end; 
     document.getElementById('event-date').value = date;
