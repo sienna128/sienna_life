@@ -7,6 +7,7 @@ from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy.orm import joinedload
+from sqlalchemy import UniqueConstraint
 from werkzeug.exceptions import abort
 import json
 import plotly.graph_objects as go
@@ -196,15 +197,16 @@ class Event(db.Model):
     
     time_range = db.relationship('TimeRange', back_populates='event', uselist=False)
 
-    color = db.Column(db.Text)
 
 class EventCategory(db.Model):
     __tablename__ = 'event_categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text, nullable=False)
-    color = db.Column(db.Text)
+    color_id = db.Column(db.Integer, db.ForeignKey('colors.id'), nullable=False)
+    
 
     events = db.relationship('Event', backref='event_categories', lazy=True)
+
 
 class TimeRangeTimeSlotIntermediary(db.Model):
     __tablename__ = 'timerange_timeslot_intermediary'
@@ -241,14 +243,13 @@ class TimeSlot(db.Model):
 
     time_ranges = db.relationship('TimeRange', secondary='timerange_timeslot_intermediary', back_populates='time_slots')
 
-
 class Color(db.Model):
     __tablename__ = 'colors'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text, nullable=False)
+    rgb = db.Column(db.Text, nullable=False)
 
-    cat_id = db.Column(db.Integer, db.ForeignKey("event_categories.id"), nullable=False)
-
+    
 class Weight(db.Model):
     __tablename__ = 'weights'
     id = db.Column(db.Integer, primary_key=True)
@@ -257,12 +258,7 @@ class Weight(db.Model):
     date_id = db.Column(db.Integer, db.ForeignKey("dates.id"), nullable=False)
     date = db.Column(db.Text, nullable=False)
 
-#study page
 
-class Subject(db.Model):
-    __tablename__ = "subjects"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
 
 
 
@@ -380,10 +376,10 @@ def date_str_to_form(ds):
 def create_weeks_from_oct():
     with app.app_context():
         ydl = p.year_dates_list
-        sind = ydl.index("10/6")
+        sind = ydl.index("1/5")
         ci = 0
 
-        for i in range(12):
+        for i in range(51):
             dates = []
 
             week_new = Week()
@@ -391,7 +387,9 @@ def create_weeks_from_oct():
             db.session.commit()
 
             for j in range(7):
+                #print(sind + ci)
                 ds = ydl[sind + ci]
+                #print(ds)
                 dss = ds.split("/")
                 dm = int(dss[0])
                 dd = int(dss[1])
@@ -408,9 +406,11 @@ def create_weeks_from_oct():
 
 def calc_cur_week():
     with app.app_context():
-        #create_weeks_from_oct()
+        create_weeks_from_oct()
         print("\n\n\n", p.today_str, len(Date.query.all()))
+
         cur_date = Date.query.filter_by(date=p.today_str).first()
+        cur_date = Date.query.filter_by(date="1/5").first()
         cur_week = Week.query.options(joinedload(Week.dates)).filter_by(id=cur_date.week_id).first()
         return cur_date, cur_week
     
@@ -895,10 +895,20 @@ def calendar_form_handling():
 
     if form_id == "cat-add":
         name = request.form["cat-event-input"]
-        color = "teal"
-        new_cat = EventCategory(name=name, color=color)
+        color_name = request.form["cat-color"]
+        color = Color.query.filter_by(name=color_name).first()
+        new_cat = EventCategory(name=name, color_id=color.id)
         db.session.add(new_cat)
         db.session.commit()
+
+    elif form_id == "color-add":
+        name = request.form["color-name"]
+        color = str(request.form["color-maker"])
+        
+        new_color = Color(name=name, rgb = color)
+        db.session.add(new_color)
+        db.session.commit()
+
     elif form_id == "event-form":
         cat_name = request.form["event-cat"]
         name = request.form["event-title"]
@@ -913,7 +923,7 @@ def calendar_form_handling():
         slots = get_time_slots(start, end)
 
         ev_tr = TimeRange(start=time_conv(start), end=time_conv(end), start_str=start, end_str=end, date_id=date.id, time_slots=slots,  event_id = 0)
-        new_event = Event(name=name, cat_id=cat.id, cat_name=cat_name, time_range=ev_tr, color=cat.color)
+        new_event = Event(name=name, cat_id=cat.id, cat_name=cat_name, time_range=ev_tr)
         ev_tr.event_id = new_event.id
 
         db.session.add_all([ev_tr, new_event])
@@ -936,11 +946,12 @@ def load_calendar(week_id):
     #timeslots = []
     event_cats = EventCategory.query.all()
     events = Event.query.all()
+    colors = Color.query.all()
     
     if request.method == "POST":
         return calendar_form_handling()
 
-    return render_template('calendar_main.html', week=week, timeslots=timeslots, event_cats=event_cats, events=events)
+    return render_template('calendar_main.html', week=week, timeslots=timeslots, event_cats=event_cats, events=events, colors=colors)
 
 #BEFORE FIRST REQUEST FUNCTION
 @app.before_request
@@ -953,13 +964,13 @@ def initialize_app():
     #clear_table(Category)
     #clear_table(Task)
     #clear_table(TaskCategory)
-    #reset_db()
+    reset_db()
 
     #prep for workout and all
-    #create_weeks_from_oct()
+    create_weeks_from_oct()
 
     #prep for calendar
-    #generate_time_slots()
+    generate_time_slots()
 
     cur_date, cur_week = calc_cur_week()
     now.cur_date = cur_date
@@ -984,6 +995,7 @@ def initial():
     #clear_table(Exercise)
     #clear_table(TimeSlot)
     #clear_table(EventCategory)
+    #clear_table(Color)
     #ce()
     #reset_db()
     #db.create_all()
@@ -1160,14 +1172,20 @@ def save_event():
 @app.route('/get_events', methods=['POST', 'GET'])
 def get_events():
     events = Event.query.all()
-    events_data = [
-        {
+    events_data = []
+    for event in events:
+        print("ec", event.cat_id)
+        cat = Category.query.filter_by(id = event.cat_id)
+        color = Color.query.filter_by(id = cat.color_id)
+        event_data = {
             "name": event.name,
             "start_time": event.time_range.start_str,
             "end_time": event.time_range.end_str,
             "date": event.time_range.date_id,
-            "time_slots": len(event.time_range.time_slots)
+            "time_slots": len(event.time_range.time_slots),
+            "cat": cat.name,
+            "color": color.rgb
         }
-        for event in events
-    ]
+        events_data.append(event_data)
+
     return jsonify(events_data)

@@ -14,6 +14,8 @@ day_now = today.strftime("%d")
 if day_now[0] == "0":
     day_now = day_now[1]
 mon_now = today.strftime("%m")
+if len(mon_now) == 2:
+    mon_now = mon_now[1:2]
 today_str = mon_now + "/" + day_now
 
 month_days = {

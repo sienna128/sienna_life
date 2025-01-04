@@ -3,6 +3,7 @@
 * {
     flex-shrink: 0;
     flex-grow: 0;
+    box-sizing: border-box;
 }
 
 .content {
@@ -39,12 +40,24 @@
 
                     .cat-info-input {background-color: $teal2; color: white;}
                     .cat-info-input::placeholder{color:white;}
+
                 }
             }
         }
 
-        .add-other {
+        .add-color {
             width: 50%;
+
+            .color-con {
+                display: flex;
+                flex-direction: row;
+                border: $seagreen19 5px solid;
+                border-radius: 3px;
+
+                .color-name {width: 40%; background:$mint13;}
+                .color-maker {width: 30%; border: solid 3px $teal5;}
+                .color-btn-submit{width: 30%; background: $mint17;}
+            }
         }
     }
 
@@ -65,10 +78,11 @@
                 flex-direction: row;
                 width: 95%;
 
-                .date {width: 14%; border: solid 5px $teal19; border-radius: 2px;}
+                .date {width: calc(100% / 7 - 20px / 7); border: solid 5px $teal19; border-radius: 2px;}
+                .scroll-blank {width: 20px;}
             }
 
-            .scroll-blank {width: 20px;}
+            
         }
 
         .info {
@@ -77,6 +91,7 @@
             height: 90%;
 
             overflow-y: scroll;
+            overflow-y: overlay;
 
             cursor: pointer;
 
@@ -100,7 +115,7 @@
                 flex-direction: row;
 
                 .date-info {
-                    width: 14%;
+                    width: calc(100% / 7);
                     display: flex;
                     flex-direction: column;
 

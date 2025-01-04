@@ -100,6 +100,8 @@ fetch('/get_events')
             const eventElement = document.getElementById(eventString);
             if (eventElement) {
                 eventElement.style.height = `${event.time_slots * 5}%`;
+                console.log("make event height: ", event.time_slots*5);
+                eventElement.style.backgroundColor = event.color;
             } else {
                 console.error("Event element not found: ", event, eventString);
             }
