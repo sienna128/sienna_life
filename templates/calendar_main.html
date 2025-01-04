@@ -23,15 +23,30 @@
                         </div>
 
                         <div class="color-con cat-info-sub">
-                            <input class="cat-info-input" type="color" id="color-selector" name="color" value="#008877"> </input>
+                            
+                            <select id="cat-color" name="cat-color" class="dropdown" required>
+                                <option value="" disabled selected> Select a color </option>
+                                {% for color in colors %}
+                                    <option class="color-option" id="color-option-{{color.name}}" value="{{color.name}}" style="background-color: {{color.rgb}}; font-weight: 700;"> 
+                                        {{color.name}} 
+                                    </option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                 </div>
             </form>
         
 
-        <div class="add-other">
-            Other
+        <div class="add-color">
+            <form class="color-form" name="color-event-form" method="POST">
+                <input type="hidden" name="form_id" value="color-add"> </input>
+                <div class="color-con">
+                    <input class="color-name" name="color-name" type="text" placeholder="Color Name"> </input>
+                    <input class="color-maker" name="color-maker" type="color" value="#008877"> </input>
+                    <button class="color-btn-submit" type="submit" for="color-form"> Add New Color </button>
+                </div>
+            </form>
         </div>
      </div>
 
@@ -49,9 +64,9 @@
                         {{date.date}}
                     </div>
                 {% endfor %}
-            </div>
 
-            <div class="scroll-blank"> S </div>
+                <div class="scroll-blank">  </div>
+            </div>
 
         </div>
 
@@ -90,9 +105,7 @@
                                 </div>
                             {% else %}
                                 {% if ns.i == 1 %}
-                                    <div class="event-slot"> {{ns.event.name}} {{ns.event.time_range.start_str}} {{ns.event.time_range.end_str}} </div>
-                                {% else %}
-                                    <div class="event-slot">blank {{ns.i}} {{ns.slots}} </div>
+                                    <div class="event-con" id ="{{ns.event.time_range.start_str}}-{{ns.event.time_range.date_id}}"> {{ns.event.name}} {{ns.event.time_range.start_str}} {{ns.event.time_range.end_str}} </div>
                                 {% endif %}
 
                                 {% set ns.i = ns.i + 1 %}

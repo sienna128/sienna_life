@@ -1,6 +1,7 @@
 * {
   flex-shrink: 0;
-  flex-grow: 0; }
+  flex-grow: 0;
+  box-sizing: border-box; }
 
 .content {
   display: flex;
@@ -31,8 +32,22 @@
             color: white; }
           .content .add .cat-form .add-cat .cat-info .cat-info-input::placeholder {
             color: white; }
-    .content .add .add-other {
+    .content .add .add-color {
       width: 50%; }
+      .content .add .add-color .color-con {
+        display: flex;
+        flex-direction: row;
+        border: #96debf 5px solid;
+        border-radius: 3px; }
+        .content .add .add-color .color-con .color-name {
+          width: 40%;
+          background: #66ffc8; }
+        .content .add .add-color .color-con .color-maker {
+          width: 30%;
+          border: solid 3px #00bfbf; }
+        .content .add .add-color .color-con .color-btn-submit {
+          width: 30%;
+          background: #2ebe57; }
   .content .display {
     height: 90%;
     display: flex;
@@ -48,16 +63,17 @@
         flex-direction: row;
         width: 95%; }
         .content .display .header .dates .date {
-          width: 14%;
+          width: calc(100% / 7 - 20px / 7);
           border: solid 5px #50dccc;
           border-radius: 2px; }
-      .content .display .header .scroll-blank {
-        width: 20px; }
+        .content .display .header .dates .scroll-blank {
+          width: 20px; }
     .content .display .info {
       display: flex;
       flex-direction: row;
       height: 90%;
       overflow-y: scroll;
+      overflow-y: overlay;
       cursor: pointer; }
       .content .display .info .times {
         width: 5%;
@@ -76,7 +92,7 @@
         display: flex;
         flex-direction: row; }
         .content .display .info .events .date-info {
-          width: 14%;
+          width: calc(100% / 7);
           display: flex;
           flex-direction: column; }
           .content .display .info .events .date-info .date-slot {
@@ -84,7 +100,7 @@
             border: 4px solid #00bfbf;
             border-radius: 2px;
             background-color: aquamarine; }
-          .content .display .info .events .date-info .event-slot {
+          .content .display .info .events .date-info .event-con {
             height: 5%;
             border: 4px solid #00bfbf;
             border-radius: 2px;
