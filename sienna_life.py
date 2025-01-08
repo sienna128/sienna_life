@@ -6,12 +6,16 @@ from flask import Flask, render_template, request, url_for, flash, redirect, jso
 from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+
 from sqlalchemy.orm import joinedload
 from sqlalchemy import UniqueConstraint
+
 from werkzeug.exceptions import abort
 import json
+
 import plotly.graph_objects as go
 from plotly.utils import PlotlyJSONEncoder
+
 import prep as p
 import datetime
 from datetime import time as time_dt
@@ -71,6 +75,12 @@ scss_bundle_workout_graph = Bundle(
     output='css/workout_graph.css'  # Compiled CSS output for workout.html
 )
 
+scss_bundle_data = Bundle(
+    'scss/data.scss',
+    filters='libsass',
+    output='css/data.css'  # Compiled CSS output for workout.html
+)
+
 # Register each bundle with a unique name
 assets.register('base_css', scss_bundle_base)
 assets.register('todo_main_css', scss_bundle_todo_main)
@@ -79,6 +89,7 @@ assets.register('workout_css', scss_bundle_workout)
 assets.register('routine_css', scss_bundle_routine)
 assets.register('calendar_css', scss_bundle_calendar)
 assets.register('workout_graph_css', scss_bundle_workout_graph)
+assets.register('data_css', scss_bundle_data)
 
 
 #-------------SQL table class variables---------------------------
@@ -218,10 +229,8 @@ class TimeRangeTimeSlotIntermediary(db.Model):
 class TimeRange(db.Model):
     __tablename__ = 'time_ranges'
     id = db.Column(db.Integer, primary_key=True)
-    start = db.Column(db.Time, nullable=False)
-    end = db.Column(db.Time, nullable=False)
-    start_str = db.Column(db.Text)
-    end_str = db.Column(db.Text)
+    start = db.Column(db.Text)
+    end = db.Column(db.Text)
 
     overnight = db.Column(db.Boolean, default=False)
     date_id = db.Column(db.Integer, db.ForeignKey('dates.id'), nullable=False)
@@ -236,10 +245,8 @@ class TimeRange(db.Model):
 class TimeSlot(db.Model):
     __tablename__ = 'time_slots'
     id = db.Column(db.Integer, primary_key=True)
-    start = db.Column(db.Time, nullable=False)
-    end = db.Column(db.Time, nullable=False)
-    time = db.Column(db.Text, nullable=False)
-    time_end = db.Column(db.Text, nullable=False)
+    start = db.Column(db.Text, nullable=False)
+    end = db.Column(db.Text, nullable=False)
 
     time_ranges = db.relationship('TimeRange', secondary='timerange_timeslot_intermediary', back_populates='time_slots')
 
@@ -279,6 +286,8 @@ def export_data(file_name="db_date.json"):
         json.dump(data, file, default=str, indent=4)  # Use default=str to serialize non-serializable objects like dates
     print(f"Data exported to {file_name}")
 
+
+
 # Helper function to convert a record to a dictionary
 def record_to_dict(record):
     record_dict = {}
@@ -286,8 +295,16 @@ def record_to_dict(record):
         
         column_name = column.name
         value = getattr(record, column_name)
+        #print("h", type(value), column_name)
+        
         record_dict[column_name] = value
     return record_dict
+
+def create_json_of_model(model):
+    with app.app_context():
+        records = db.session.query(model).all()
+        json_data = [record_to_dict(record) for record in records]
+        return json_data
 
 from datetime import datetime
 
@@ -328,6 +345,33 @@ def import_data(file_name="db_12_3.json"):
 
 
 # Helper function to get the model class based on table name
+models = {
+        'todos': ToDo,
+        'categories': Category,
+        'exercises': Exercise,
+        'workouts': Workout,
+        'dates': Date,
+        'weeks': Week,
+        'tasks': Task,
+        'task_records': TaskRecord,
+        'task_categories': TaskCategory,
+        'routines': Routine,
+        'events': Event,
+        'event_categories': EventCategory,
+        'time_ranges': TimeRange,
+        'time_slots': TimeSlot,
+        'colors': Color
+    }
+
+model_tup = []
+model_dic = {}
+for m in models:
+    json_model = create_json_of_model(models[m])
+    model_tup_i = (m, models[m], json_model)
+    model_dic[m] = json_model
+    model_tup.append(model_tup_i)
+
+
 def get_model_class(table_name):
     models = {
         'todos': ToDo,
@@ -819,8 +863,7 @@ def generate_time_slots():
             else:
                 min_end = min + 15
                 hour_end = hour
-            time = time_dt(hour, min)
-            time_end = time_dt(hour, min_end)
+            
             if len(str(min)) == 2:
                 time_str = str(hour) + ":" + str(min)
             else:
@@ -830,7 +873,7 @@ def generate_time_slots():
                 time_stre = str(hour_end) + ":" + str(min_end)
             else:
                 time_stre = str(hour_end) + ":0" + str(min_end)
-            new_slot = TimeSlot(start=time, end=time_end, time=time_str, time_end=time_stre)
+            new_slot = TimeSlot(start=time_str, end=time_stre)
             slots.append(new_slot)
     
     db.session.add_all(slots)
@@ -851,7 +894,7 @@ def get_time_slots(start, end):
     ch = sh
     cm = sm
 
-    slots = [TimeSlot.query.filter(TimeSlot.time == start).first()]
+    slots = [TimeSlot.query.filter(TimeSlot.start == start).first()]
 
     if eh > sh or (eh == sh and em > sm):
         cont = True
@@ -875,7 +918,7 @@ def get_time_slots(start, end):
             else:
                 time_str = str(ch) + ":" + str(cm)
 
-            ts = TimeSlot.query.filter(TimeSlot.time == time_str).first()
+            ts = TimeSlot.query.filter(TimeSlot.start == time_str).first()
             slots.append(ts)
     return slots
 
@@ -918,7 +961,7 @@ def calendar_form_handling():
 
         slots = get_time_slots(start, end)
 
-        ev_tr = TimeRange(start=time_conv(start), end=time_conv(end), start_str=start, end_str=end, date_id=date.id, time_slots=slots,  event_id = 0)
+        ev_tr = TimeRange(start=start, end=end, date_id=date.id, time_slots=slots,  event_id = 0)
         new_event = Event(name=name, cat_id=cat.id, cat_name=cat_name, time_range=ev_tr)
         ev_tr.event_id = new_event.id
 
@@ -927,7 +970,7 @@ def calendar_form_handling():
 
         print("\n\n\nhere")
         for ts in new_event.time_range.time_slots:
-            print(ts.time)
+            print(ts.start)
 
     return redirect(url_for('calendar', week_id=0))
 
@@ -949,6 +992,10 @@ def load_calendar(week_id):
 
     return render_template('calendar_main.html', week=week, timeslots=timeslots, event_cats=event_cats, events=events, colors=colors)
 
+def load_data():
+
+    return render_template('data.html', models = model_tup)
+
 #BEFORE FIRST REQUEST FUNCTION
 @app.before_request
 def initialize_app():
@@ -960,7 +1007,7 @@ def initialize_app():
     #clear_table(Category)
     #clear_table(Task)
     #clear_table(TaskCategory)
-    #reset_db()
+    reset_db()
 
     #prep for workout and all
     create_weeks_from_oct()
@@ -1177,8 +1224,8 @@ def get_events():
         color = Color.query.filter_by(id = cat.color_id).first()
         event_data = {
             "name": event.name,
-            "start_time": event.time_range.start_str,
-            "end_time": event.time_range.end_str,
+            "start_time": event.time_range.start,
+            "end_time": event.time_range.end,
             "date": event.time_range.date_id,
             "time_slots": len(event.time_range.time_slots),
             "cat": cat.name,
@@ -1188,3 +1235,16 @@ def get_events():
 
     print(jsonify(events_data))
     return jsonify(events_data)
+
+#data page
+@app.route('/data', methods=('GET', 'POST'))
+def data():
+    return load_data()
+
+
+#get events 
+@app.route('/get_data', methods=['POST', 'GET'])
+def get_data():
+    print(model_dic["todos"])
+    return jsonify(model_dic)
+

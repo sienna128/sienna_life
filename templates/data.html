@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/data.css') }}">
+    
+    <div class="content">
+        <h1 class="header">{% block title %} Data Control {% endblock %}</h1>
+        
+        <div class="menu">
+            <ul class="nav-links">
+                <li class="nav-item"> <a class="nav-link"> Clear All Data  </a> </li>
+                <li class="nav-item"> <a class="nav-link"> Reupload old Database </a> </li>
+            </ul>
+        </div>
+
+        <div class="model-info">
+            {% set ns = namespace(model = None) %}
+            <div class="model-select">
+                <select id="model-select" name="model-select" class="dropdown" onchange="showContent()" required>
+                    <option value="" disabled selected> Select a Model to view </option>
+                        {% for model in models %}
+                            <option class="model-option" id="model-option-{{model[0]}}" value="{{model[0]}}" >
+                                {{model[0]}}
+                            </option>
+                        {% endfor %}
+                </select>
+            </div>
+
+            <div class="model-display" id="model-content">
+                data here
+                {{models[0][3]}}
+            </div>
+
+        </div>
+        
+    </div>
+
+{% endblock %}
+
+
+{% block js_end %} <script type="text/javascript" src="{{ url_for('static', filename='js/data.js') }}"> </script> {% endblock %}

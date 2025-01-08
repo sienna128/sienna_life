@@ -76,7 +76,7 @@
                 {% for time in timeslots %}
                     <div class="time-con">
                         <div class="time">
-                            {{time.time }}
+                            {{time.start }}
                         </div>
                         <div class="time-bottom"></div>
                     </div>
@@ -91,7 +91,7 @@
                         {% for slot in timeslots %}
                             
                             {% for e in events %}
-                                {% if e.time_range.start_str == slot.time and e.time_range.date_id == date.id %}
+                                {% if e.time_range.start == slot.start and e.time_range.date_id == date.id %}
                                     
                                     {% set ns.event = e %}
                                     {% set ns.slots = e.time_range.time_slots|length %}
@@ -100,12 +100,12 @@
                             {% endfor %}
                             
                             {% if ns.found == False and ns.i > ns.slots %}
-                                <div class="date-slot" data-time="{{slot.time}}" data-timeend="{{slot.time_end}}" data-date="{{date.date}}">
-                                    {{date.date}} {{slot.time}} 
+                                <div class="date-slot" data-time="{{slot.start}}" data-timeend="{{slot.end}}" data-date="{{date.date}}">
+                                    {{date.date}} {{slot.start}} 
                                 </div>
                             {% else %}
                                 {% if ns.i == 1 %}
-                                    <div class="event-con" id ="{{ns.event.time_range.start_str}}-{{ns.event.time_range.date_id}}"> {{ns.event.name}} {{ns.event.time_range.start_str}} {{ns.event.time_range.end_str}} </div>
+                                    <div class="event-con" id ="{{ns.event.time_range.start}}-{{ns.event.time_range.date_id}}"> {{ns.event.name}} {{ns.event.time_range.start}} {{ns.event.time_range.end}} </div>
                                 {% endif %}
 
                                 {% set ns.i = ns.i + 1 %}
