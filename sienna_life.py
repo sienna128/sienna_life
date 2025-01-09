@@ -1,6 +1,7 @@
 #----------------------SET UP------------------------------------------------------
 
 #imports
+import os
 import sqlite3
 from flask import Flask, render_template, request, url_for, flash, redirect, jsonify
 from flask_assets import Environment, Bundle
@@ -17,7 +18,7 @@ import plotly.graph_objects as go
 from plotly.utils import PlotlyJSONEncoder
 
 import prep as p
-import datetime
+from datetime import datetime
 from datetime import time as time_dt
 from datetime import date as date_dt
 from collections import defaultdict
@@ -91,9 +92,7 @@ assets.register('calendar_css', scss_bundle_calendar)
 assets.register('workout_graph_css', scss_bundle_workout_graph)
 assets.register('data_css', scss_bundle_data)
 
-
 #-------------SQL table class variables---------------------------
-
 #todo page
 class ToDo(db.Model):
     __tablename__ = 'todos'
@@ -256,7 +255,6 @@ class Color(db.Model):
     name = db.Column(db.Text, nullable=False)
     rgb = db.Column(db.Text, nullable=False)
 
-    
 class Weight(db.Model):
     __tablename__ = 'weights'
     id = db.Column(db.Integer, primary_key=True)
@@ -265,24 +263,30 @@ class Weight(db.Model):
     date_id = db.Column(db.Integer, db.ForeignKey("dates.id"), nullable=False)
     date = db.Column(db.Text, nullable=False)
 
-
-
-
+#--------------------- END OF MODELS  -----------------------------------------
+  
 
 #--------------------- PREPARATION -----------------------------------------
 
+#-------------------- DATA PREPARATION ----------------------------
 # Export data to JSON file
-def export_data(file_name="db_date.json"):
+def export_data(file_name = None):
     data = {}
 
+    if file_name == None:
+        file_name = "db_" + datetime.now().strftime("%m-%d-%Y %H-%M-%S") + ".json"
+    
+    db_folder = "db_exports"
+    file_path = os.path.join(db_folder, file_name)
+
     # Query all records for each model and convert to dict format
-    for model in [ToDo, Category, Exercise, Workout, Date, Week, Task, TaskRecord, TaskCategory, Routine, Event, EventCategory, TimeRange, TimeSlot, Color]:
+    for model in [ToDo, Category, Exercise, Workout, Date, Week, Task, TaskRecord, TaskCategory, Routine, Event, EventCategory, TimeRange, TimeSlot, Color, Weight]:
         table_name = model.__tablename__
         records = db.session.query(model).all()
         data[table_name] = [record_to_dict(record) for record in records]
 
     # Write data to file
-    with open(file_name, "w") as file:
+    with open(file_path, "w") as file:
         json.dump(data, file, default=str, indent=4)  # Use default=str to serialize non-serializable objects like dates
     print(f"Data exported to {file_name}")
 
@@ -306,11 +310,25 @@ def create_json_of_model(model):
         json_data = [record_to_dict(record) for record in records]
         return json_data
 
-from datetime import datetime
 
-def import_data(file_name="db_12_3.json"):
-    with open(file_name, "r") as file:
+def import_data(file_name):
+    db_folder = "../sienna_life/db_exports"
+    file_path = os.path.join(db_folder, file_name)
+    print("\n\n\nfp", file_path)
+    print(os.getcwd())
+    file_path = "db_exports/" + file_name
+
+    with open(file_path, "r") as file:
+        print(type(file), file)
         data = json.load(file)
+
+    #delete old data
+    with app.app_context():
+        for table_name in data.keys():
+            model_class = get_model_class(table_name)
+            if model_class:
+                db.session.query(model_class).delete()
+        db.session.commit()
 
     # Add data back into the database
     with app.app_context():
@@ -341,7 +359,7 @@ def import_data(file_name="db_12_3.json"):
                     obj = model_class(**record)
                     db.session.add(obj)
         db.session.commit()
-    print("Data imported successfully!")
+    print("\n\nData imported successfully!")
 
 
 # Helper function to get the model class based on table name
@@ -365,12 +383,21 @@ models = {
 
 model_tup = []
 model_dic = {}
-for m in models:
-    json_model = create_json_of_model(models[m])
-    model_tup_i = (m, models[m], json_model)
-    model_dic[m] = json_model
-    model_tup.append(model_tup_i)
 
+def update_model_info():
+    global model_tup
+    global model_dic
+    model_tup = []
+    model_dic = {}
+    for m in models:
+        json_model = create_json_of_model(models[m])
+        #print(json_model)
+        model_tup_i = (m, models[m], json_model)
+        model_dic[m] = json_model
+        model_tup.append(model_tup_i)
+
+update_model_info()
+print("\n\nmt", model_tup)
 
 def get_model_class(table_name):
     models = {
@@ -392,10 +419,23 @@ def get_model_class(table_name):
     }
     return models.get(table_name)
 
+def get_filenames(folder_path):
+    filenames = []
+    for filename in os.listdir(folder_path):
+        if os.path.isfile(os.path.join(folder_path, filename)):
+            filenames.append(filename)
+    return filenames
 
+db_versions = []
+def update_db_versions():
+    db_versions = get_filenames(r"..\sienna_life\db_exports")
+    return db_versions
+    
+db_versions = update_db_versions()
 
+#print("\n\n\n", model_dic)
 
-#----------------DATE PREPARATION---------------------------
+#----------------  DATE PREPARATION ----------------------------------------
 
 #global variables
 class Now():
@@ -411,8 +451,8 @@ def date_str_to_form(ds):
     df = date_dt(2024, dm, dd)
     return df
 
-#create weeks starting at oct
-def create_weeks_from_oct():
+#create weeks starting at jan
+def create_weeks_from_jan():
     with app.app_context():
         ydl = p.year_dates_list
         sind = ydl.index("1/5")
@@ -445,7 +485,7 @@ def create_weeks_from_oct():
 
 def calc_cur_week():
     with app.app_context():
-        create_weeks_from_oct()
+        create_weeks_from_jan()
         print("\n\n\n", p.today_str, len(Date.query.all()))
 
         cur_date = Date.query.filter_by(date=p.today_str).first()
@@ -506,6 +546,9 @@ def calc_prev_and_next_weeks(week_id):
 
 
 #------------------PAGE FUNCTIONS-----------------------------------------
+
+
+#------------------- WO FUNCTIONS --------------------------------
 def load_workout(week_id):
     exs = Exercise.query.all()
 
@@ -629,7 +672,33 @@ def load_workout_graph(week_id):
     weights = Weight.query.all()
     return render_template('workout_graph.html', weights=weights)
 
+def workout_add_weight():
+    date_str = request.form['date']
+    weight = float(request.form['weight'])
 
+    date = db.session.query(Date).filter(Date.date == date_str).first()
+    new_weight = Weight(weight=weight, date_id = date.id, date=date.date)
+    db.session.add(new_weight)
+    db.session.commit()
+
+    entries = Weight.query.order_by(Weight.date).all()
+
+    fig = go.Figure(data=[
+        go.Scatter(
+            x=[entry.date for entry in entries],
+            y=[entry.weight for entry in entries],
+            mode='markers+lines',
+            marker=dict(size=10, color="blue"),
+            hovertemplate='Date: %{x}<br>Weight: %{y} lbs<extra></extra>'
+        )
+    ])
+
+    fig.update_layout(title="Weight Tracker", xaxis_title="Date", yaxis_title="Weight (lbs)")
+
+    graph_json = json.dumps(fig, cls=PlotlyJSONEncoder)
+    return jsonify({'graph': graph_json})
+
+#------------------- TO DO FUNCTIONS --------------------------------
 
 def todo_form_handling(request, cats):
 
@@ -726,6 +795,8 @@ def load_todo_sort(sort_cat, order):
 
     return render_template('todo_main.html', todos = todos_sorted, cats=cats)
 
+
+#------------------- ROUT FUNCTIONS --------------------------------
 
 def routine_form_handling(cats):
     form_id = request.form['form_id']
@@ -850,6 +921,9 @@ def load_routine(week_id):
     cats = TaskCategory.query.all()
 
     return render_template('routine_main.html', ts = tasks, week = week, recs = recs, cats=cats, comps=comps)
+
+
+#------------------- CAL FUNCTIONS --------------------------------
 
 def generate_time_slots():
     slots = []
@@ -992,16 +1066,44 @@ def load_calendar(week_id):
 
     return render_template('calendar_main.html', week=week, timeslots=timeslots, event_cats=event_cats, events=events, colors=colors)
 
+
+#------------------- DATA FUNCTIONS --------------------------------
+
 def load_data():
+    #print("\n\n\n here 2", request.method)
+    if request.method == "POST":
+        #print("\n\n\nhere1")
+        return data_form_handling()
+    return render_template('data.html', models = model_tup, db_v = db_versions)
 
-    return render_template('data.html', models = model_tup)
+def save_database_func():
+    print("\n\n\ndatabase saved")
+    export_data()
+    global db_versions
+    db_versions = update_db_versions()
+    return load_data()
 
-#BEFORE FIRST REQUEST FUNCTION
-@app.before_request
-def initialize_app():
-    print("\n\n\n\n\ninit")
-    app.before_request_funcs[None].remove(initialize_app)
 
+    
+def data_form_handling():
+    #print("\n\nhere3", request.form)
+
+    form_id = request.form["form_id"]
+    print("\n\n\n\n here5", form_id)
+    if form_id == "db_version":
+        db_name = request.form["db-version"]
+        print("\n\n\n here4", db_name)
+        import_data(db_name)
+        update_model_info()
+
+    return redirect(url_for('data'))
+
+def clear_events():
+    clear_table(Event)
+    clear_table(TimeRange)
+    clear_table(TimeRangeTimeSlotIntermediary)
+
+def possible_data_functions():
     #deleting stuff
     #clear_table(ToDo)
     #clear_table(Category)
@@ -1010,7 +1112,7 @@ def initialize_app():
     reset_db()
 
     #prep for workout and all
-    create_weeks_from_oct()
+    create_weeks_from_jan()
 
     #prep for calendar
     generate_time_slots()
@@ -1020,10 +1122,16 @@ def initialize_app():
     now.cur_week = cur_week
     #print(now.cur_week)
 
-def ce():
-    clear_table(Event)
-    clear_table(TimeRange)
-    clear_table(TimeRangeTimeSlotIntermediary)
+
+
+#------------------- INITAL SEQUENCE --------------------------------
+@app.before_request
+def initialize_app():
+    app.before_request_funcs[None].remove(initialize_app)
+
+    
+
+
 
 def initial():
     print("\n\n\n\n\ninit")
@@ -1041,13 +1149,13 @@ def initial():
     #clear_table(Event)
     #clear_table(Color)
     #ce()
-    #reset_db()
+    reset_db()
     #db.create_all()
 
     #import_data()
 
     #prep for workout and all
-    #create_weeks_from_oct()
+    #create_weeks_from_jan()
 
     #prep for calendar
     #generate_time_slots()
@@ -1080,30 +1188,8 @@ def workout_graph(week_id):
 
 @app.route('/add_weight', methods=["POST"])
 def add_weight():
-    date_str = request.form['date']
-    weight = float(request.form['weight'])
-
-    date = db.session.query(Date).filter(Date.date == date_str).first()
-    new_weight = Weight(weight=weight, date_id = date.id, date=date.date)
-    db.session.add(new_weight)
-    db.session.commit()
-
-    entries = Weight.query.order_by(Weight.date).all()
-
-    fig = go.Figure(data=[
-        go.Scatter(
-            x=[entry.date for entry in entries],
-            y=[entry.weight for entry in entries],
-            mode='markers+lines',
-            marker=dict(size=10, color="blue"),
-            hovertemplate='Date: %{x}<br>Weight: %{y} lbs<extra></extra>'
-        )
-    ])
-
-    fig.update_layout(title="Weight Tracker", xaxis_title="Date", yaxis_title="Weight (lbs)")
-
-    graph_json = json.dumps(fig, cls=PlotlyJSONEncoder)
-    return jsonify({'graph': graph_json})
+    workout_add_weight()
+    
 
 #todo page
 @app.route('/todo', methods=('GET', 'POST'))
@@ -1239,12 +1325,32 @@ def get_events():
 #data page
 @app.route('/data', methods=('GET', 'POST'))
 def data():
+    print("in data")
     return load_data()
 
 
 #get events 
 @app.route('/get_data', methods=['POST', 'GET'])
 def get_data():
-    print(model_dic["todos"])
+    #print("model", model_dic['dates'])
     return jsonify(model_dic)
+
+#save database
+@app.route('/save_database', methods=["GET"])
+def save_database():
+    print("\n\nsave database start")
+    return save_database_func()
+
+#reset database
+@app.route('/reset_database', methods=["GET"])
+def reset_database():
+    return reset_db()
+
+#make dates and times
+@app.route('/make_dates_and_times', methods=["GET"])
+def make_dates_and_times():
+    generate_time_slots()
+    create_weeks_from_jan()
+
+
 

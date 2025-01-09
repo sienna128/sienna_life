@@ -9,8 +9,26 @@
         
         <div class="menu">
             <ul class="nav-links">
-                <li class="nav-item"> <a class="nav-link"> Clear All Data  </a> </li>
-                <li class="nav-item"> <a class="nav-link"> Reupload old Database </a> </li>
+                <li class="nav-item"> <a class="nav-link" href="/save_database"> Save Current Version  </a> </li>
+                <li class="nav-item"> <a class="nav-link" href="/reset_database"> Clear All Data  </a> </li>
+
+                <li class="nav-item"> <a class="nav-link" href="/make_dates_and_times"> Make Dates and Times  </a> </li>
+                
+                <li class="nav-item nav-item-large"> <a class="nav-link db-version-item">
+                    <form class="db-version-form" name="db-version-form" method="POST"> 
+                        <input type="hidden" name="form_id" value="db_version"> </input>
+                        <button class="db-version-btn" type="submit" for="db-version"> Switch Database Version </button>
+                        <select id="db-version-select" name="db-version" class="dropdown" required>
+                            <option class="db-option" value="" disabled selected> Select a database version </option>
+                            {% for db in db_v %}
+                                <option class="db-option" id="db-option-{{db}}" value="{{db}}">
+                                    {{db}}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>  
+                </a> </li>
+                
             </ul>
         </div>
 
@@ -29,7 +47,6 @@
 
             <div class="model-display" id="model-content">
                 data here
-                {{models[0][3]}}
             </div>
 
         </div>
