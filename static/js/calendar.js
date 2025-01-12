@@ -3,6 +3,9 @@ let isMouseDown = false;
 let startSlot = null;
 let activeEvent = null;
 
+let slotsList = [];
+let lastSlot = null;
+
 const modal = document.getElementById("event-modal");
 const closeButton = document.querySelector(".close-button");
 
@@ -17,8 +20,10 @@ eventsContainer.forEach((dateSlots) => {
         //console.log("mouse down", e.target)
         if (slot.classList.contains("date-slot")) {
             startSlot = slot;
+            lastSlot = slot;
             console.log("down start", startSlot);
             startSlot.style.backgroundColor = "teal";
+            slotsList.push(slot);
         }
     })
 
@@ -28,9 +33,22 @@ eventsContainer.forEach((dateSlots) => {
             
             const currentSlot = e.target;
             //console.log("inside", currentSlot)
+            console.log(currentSlot);
+            console.log(currentSlot in slotsList, currentSlot == lastSlot, slotsList.length);
+            console.log(slotsList.indexOf(currentSlot));
             if (currentSlot.classList.contains("date-slot")) {
+                
+                if (slotsList.indexOf(currentSlot) > -1) {
                 //console.log("in inside", currentSlot)
-                currentSlot.style.backgroundColor = "teal";
+                    currentSlot.style.backgroundColor = "teal";
+                    lastSlot = currentSlot;
+                    slotsList.push(currentSlot);
+                } else {
+                    if (currentSlot != lastSlot) {
+                        currentSlot.style.backgroundColor = "aquamarine";
+                        slotsList.splice(slotsList.indexOf(currentSlot), 1);
+                    }
+                }
             }
         }
     })

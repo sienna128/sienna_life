@@ -428,7 +428,7 @@ def get_filenames(folder_path):
 
 db_versions = []
 def update_db_versions():
-    db_versions = get_filenames(r"..\sienna_life\db_exports")
+    db_versions = get_filenames("../sienna_life/db_exports")
     return db_versions
     
 db_versions = update_db_versions()
@@ -1128,7 +1128,9 @@ def possible_data_functions():
 @app.before_request
 def initialize_app():
     app.before_request_funcs[None].remove(initialize_app)
-
+    cur_date, cur_week = calc_cur_week()
+    now.cur_date = cur_date
+    now.cur_week = cur_week
     
 
 
