@@ -314,12 +314,12 @@ def create_json_of_model(model):
 def import_data(file_name):
     db_folder = "../sienna_life/db_exports"
     file_path = os.path.join(db_folder, file_name)
-    print("\n\n\nfp", file_path)
-    print(os.getcwd())
+    #print("\n\n\nfp", file_path)
+    #print(os.getcwd())
     file_path = "db_exports/" + file_name
 
     with open(file_path, "r") as file:
-        print(type(file), file)
+        #print(type(file), file)
         data = json.load(file)
 
     #delete old data
@@ -397,7 +397,7 @@ def update_model_info():
         model_tup.append(model_tup_i)
 
 update_model_info()
-print("\n\nmt", model_tup)
+#print("\n\nmt", model_tup)
 
 def get_model_class(table_name):
     models = {
@@ -489,7 +489,7 @@ def calc_cur_week():
         print("\n\n\n", p.today_str, len(Date.query.all()))
 
         cur_date = Date.query.filter_by(date=p.today_str).first()
-        cur_date = Date.query.filter_by(date="1/5").first()
+        
         cur_week = Week.query.options(joinedload(Week.dates)).filter_by(id=cur_date.week_id).first()
         return cur_date, cur_week
     
@@ -958,7 +958,7 @@ def generate_colors():
 
 def get_time_slots(start, end):
     s = start.split(":")
-    print("s", start, s)
+    #print("s", start, s)
     sh = int(s[0])
     sm = int(s[1])
     e = end.split(":")
@@ -1002,9 +1002,13 @@ def time_conv(time_str):
     m = int(ts[1])
     return time_dt(h, m)
 
+def recur_handling(event, recur_days):
+    recurs = ["daily", "weekly", "monthly", "select days"]
+
+
 def calendar_form_handling():
     form_id = request.form["form_id"]
-    print("\n\nform", form_id)
+    #print("\n\nform", form_id)
 
     if form_id == "cat-add":
         name = request.form["cat-event-input"]
@@ -1028,23 +1032,35 @@ def calendar_form_handling():
         start = request.form["event-start"]
         end = request.form["event-end"]
         date_str = request.form["event-date"]
+        recur_days_str = request.form["recur-days"]        
 
-        print("\n\n\ncat name", cat_name)
-        cat = EventCategory.query.filter_by(name = cat_name).first()
-        date = Date.query.filter(Date.date == date_str).first()
+        if recur_days_str == "":
+            loop_num = 1
+            recur_days = [date_str]
+        else:
+            recur_days = recur_days_str.split(",")
+            recur_days.insert(0, date_str)
 
-        slots = get_time_slots(start, end)
+        recur_days = [x.strip() for x in recur_days]
 
-        ev_tr = TimeRange(start=start, end=end, date_id=date.id, time_slots=slots,  event_id = 0)
-        new_event = Event(name=name, cat_id=cat.id, cat_name=cat_name, time_range=ev_tr)
-        ev_tr.event_id = new_event.id
+        print("rd", recur_days)
 
-        db.session.add_all([ev_tr, new_event])
-        db.session.commit()
+        for date_str in recur_days:
+            cat = EventCategory.query.filter_by(name = cat_name).first()
+            date = Date.query.filter(Date.date == date_str).first()
+            print("check date query", date_str, date)
+            slots = get_time_slots(start, end)
 
-        print("\n\n\nhere")
-        for ts in new_event.time_range.time_slots:
-            print(ts.start)
+            ev_tr = TimeRange(start=start, end=end, date_id=date.id, time_slots=slots,  event_id = 0)
+            new_event = Event(name=name, cat_id=cat.id, cat_name=cat_name, time_range=ev_tr)
+            ev_tr.event_id = new_event.id
+
+            db.session.add_all([ev_tr, new_event])
+            db.session.commit()
+
+            #print("\n\n\nhere")
+            #for ts in new_event.time_range.time_slots:
+            #    print(ts.start)
 
     return redirect(url_for('calendar', week_id=0))
 
@@ -1151,7 +1167,7 @@ def initial():
     #clear_table(Event)
     #clear_table(Color)
     #ce()
-    reset_db()
+    #reset_db()
     #db.create_all()
 
     #import_data()
@@ -1312,6 +1328,7 @@ def get_events():
         color = Color.query.filter_by(id = cat.color_id).first()
         event_data = {
             "name": event.name,
+            "id": event.id,
             "start_time": event.time_range.start,
             "end_time": event.time_range.end,
             "date": event.time_range.date_id,
@@ -1323,6 +1340,32 @@ def get_events():
 
     print(jsonify(events_data))
     return jsonify(events_data)
+
+#get events 
+@app.route('/get_timeslots', methods=['POST', 'GET'])
+def get_timeslots():
+    slots = TimeSlot.query.all()
+    slots_data = []
+    for slot in slots: 
+        slot_data = {
+            "start": slot.start, 
+            "end": slot.end
+        }
+        slots_data.append(slot_data)
+    return jsonify(slots_data)
+
+#get events 
+@app.route('/get_dates', methods=['POST', 'GET'])
+def get_dates():
+    dates = Date.query.all()
+    dates_data = []
+    for date in dates: 
+        date_data = {
+            "date": date.date
+        }
+        dates_data.append(date_data)
+    return jsonify(dates_data)
+
 
 #data page
 @app.route('/data', methods=('GET', 'POST'))
@@ -1353,6 +1396,15 @@ def reset_database():
 def make_dates_and_times():
     generate_time_slots()
     create_weeks_from_jan()
+    return data()
+
+#clear calendar data
+@app.route('/clear_calendar', methods=["GET"])
+def clear_calendar():
+    clear_table(Event)
+    clear_table(TimeRange)
+    clear_table(TimeRangeTimeSlotIntermediary)
+    return data()
 
 
 

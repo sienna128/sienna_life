@@ -115,9 +115,22 @@ button {
 
 /* DATE SECTION */
 
+.ex-form {
+    height: 90%;
+}
+
+.workout-display-dates-con {
+    display: flex;
+    flex-direction: row;
+    height: 10%;
+}
+
+.scroll-blank {width: 15px; height: 100%;}
+
 .workout-display-dates {
     display: flex;
-    height: 10%;
+    
+    width: calc(100% - 15px);
 }
 
 .workout-submit-btn-container {
@@ -166,16 +179,14 @@ button {
 
 /* EXERCISE SECTION */
 
-.exercises-container {
-    padding-top: 1%;
-    height: 90%;
-}
+
 
 .exercises {
+    padding-top: 1%;
+    height: 90%;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
-    
 }
 
 .exercises::-webkit-scrollbar {
@@ -220,6 +231,7 @@ button {
     display: flex;
     flex-shrink: 0;
     justify-content: center;
+    
 }
 
 .exercise-date-in {
@@ -238,3 +250,4 @@ button {
 .no-match::placeholder {
     color: blue;
 }
+

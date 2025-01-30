@@ -105,7 +105,7 @@
                                 </div>
                             {% else %}
                                 {% if ns.i == 1 %}
-                                    <div class="event-con" id ="{{ns.event.time_range.start}}-{{ns.event.time_range.date_id}}"> {{ns.event.name}} {{ns.event.time_range.start}} {{ns.event.time_range.end}} </div>
+                                    <div class="event-con" id = "event-{{ns.event.id}}" info ="{{ns.event.time_range.start}}-{{ns.event.time_range.date_id}}"> {{ns.event.name}} {{ns.event.time_range.start}} {{ns.event.time_range.end}} </div>
                                 {% endif %}
 
                                 {% set ns.i = ns.i + 1 %}
@@ -150,17 +150,29 @@
 
             <div class="start-con info-con">
                 <label for="event-start">Start Time:</label>
-                <input type="text" id="event-start" name="event-start" readonly>
+                <select id="event-start" name="event-start" class="dropdown" required>
+                    
+                </select>
             </div>    
 
             <div class="end-con info-con">
                 <label for="event-end">End Time:</label>
-                <input type="text" id="event-end" name="event-end" readonly>
+                <select id="event-end" name="event-end" class="dropdown" required>
+                    
+                </select>
             </div>
 
             <div class="date-con info-con">
+
                 <label for="event-date">Date:</label>
-                <input type="text" id="event-date" name="event-date" readonly>
+                <select id="event-date" name="event-date" class="dropdown" required>
+                    
+                </select>
+            </div>
+
+            <div class="recur-con info-con">
+                <label for="recur-days"> Recurring Days: </label>
+                <input type="text" id="recur-days" name="recur-days">
             </div>
                 
             <button type="submit" class="save-event-button">Save Event</button>

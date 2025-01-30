@@ -53,53 +53,54 @@
                     <input type="hidden" name="form_id" value="form-content"> </input>
 
                     <!-- Displaying the date header -->
-                    <div class="workout-display-dates">
+                    <div class="workout-display-dates-con">
+                        <div class="workout-display-dates">
 
-                        <div class="workout-submit-btn-container">
-                            <button class = "workout-submit-btn" type="submit" id="workout-save-btn"> <h2 class="workout-submit-text"> Save </h2> </button>
+                            <div class="workout-submit-btn-container">
+                                <button class = "workout-submit-btn" type="submit" id="workout-save-btn"> <h2 class="workout-submit-text"> Save </h2> </button>
+                            </div>
+
+                            <div class="workout-display-dates-content">
+                                {% for date in week.dates %}
+                                    <div class="date">
+                                        <h2 class="date-str"> {{ date.date }}</h2>
+                                    </div>
+                                {% endfor %}
+                            </div>                    
+                        
+
                         </div>
-
-                        <div class="workout-display-dates-content">
-                            {% for date in week.dates %}
-                                <div class="date">
-                                    <h2 class="date-str"> {{ date.date }}</h2>
-                                </div>
-                            {% endfor %}
-                        </div>                    
-                    
-
+                        <div class="scroll-blank"></div>
                     </div>
 
                     <!-- Displaying the exercises and the reps -->
-                    <div class="exercises-container">
-                        <div class="exercises">
-                            {% for ex in exs %}
-                                <div class = "exercise-log">
+                    
+                    <div class="exercises">
+                        {% for ex in exs %}
+                            <div class = "exercise-log">
 
-                                    <div class = "exercise-name"> <h2> {{ ex.name }} </h2> </div>
+                                <div class = "exercise-name"> <h2> {{ ex.name }} </h2> </div>
 
-                                    <div class="exercise-name-content">
-                                        {% for date in week.dates %}
-                                            <div class="exercise-date">
-                                                {% for wo, e, d in wos %}
-                                                    {% if e.id==ex.id and d.id==date.id %}
-                                                        <input class="exercise-date-in" 
-                                                                id="{{ ex.name }}-on-{{ date.date }}" 
-                                                                name="{{ ex.name }}-on-{{ date.date }}"
-                                                                value="{{ wo.reps }}"> 
-                                                        </input>
-                                                    {% endif %}
-                                                {% endfor %}                
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-
+                                <div class="exercise-name-content">
+                                    {% for date in week.dates %}
+                                        <div class="exercise-date">
+                                            {% for wo, e, d in wos %}
+                                                {% if e.id==ex.id and d.id==date.id %}
+                                                    <input class="exercise-date-in" 
+                                                            id="{{ ex.name }}-on-{{ date.date }}" 
+                                                            name="{{ ex.name }}-on-{{ date.date }}"
+                                                            value="{{ wo.reps }}"> 
+                                                    </input>
+                                                {% endif %}
+                                            {% endfor %}                
+                                        </div>
+                                    {% endfor %}
                                 </div>
-                            {% endfor %}
-                        </div>
-                        <div class="bottom space"> </div>
-                    </div>
 
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
                 </form>
             </div>
         </div>
